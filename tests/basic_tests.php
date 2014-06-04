@@ -1,7 +1,7 @@
 <?php
 
-require __DIR__ . '/../../../vendor/autoload.php';
-require __DIR__ . '/../../../src/utils.php';
+require __DIR__ . '/../vendor/autoload.php';
+require __DIR__ . '/../src/utils.php';
 
 describe('Natural assertions', function () {
     given('true', true);
