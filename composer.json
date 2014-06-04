@@ -1,0 +1,17 @@
+{
+    "name": "given-php/given-php",
+    "description": "A PHP Framework for Unit Testing",
+    "minimum-stability": "dev",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Thomas Ruiz",
+            "email": "thomas.ruiz.perso@gmail.com"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "src/"
+        ]
+    }
+}
