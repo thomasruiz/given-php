@@ -122,7 +122,9 @@ class GivenPHP
 
     public function then($callback)
     {
+        $saved = clone $this->current_suite;
         $result = $this->current_suite->run($callback);
+        $this->current_suite = $saved;
 
         $this->results[] = $result;
         if ($result->is_error()) {

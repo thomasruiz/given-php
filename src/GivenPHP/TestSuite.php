@@ -9,6 +9,7 @@ class TestSuite
     private $actions;
     private $data;
     private $parsed;
+    private $executing_when;
 
     /**
      * @var Callback $current_callback
@@ -17,20 +18,24 @@ class TestSuite
 
     public function __construct($description)
     {
-        $this->description = $description;
-        $this->actions     = [ ];
-        $this->data        = [ ];
-        $this->parsed      = [ ];
+        $this->description    = $description;
+        $this->executing_when = false;
+        $this->actions        = [ ];
+        $this->data           = [ ];
+        $this->parsed         = [ ];
     }
 
     public function run($callback)
     {
-        // Ensure that the base context is clean for further tests
-        $context = clone $this;
+        if ($this->executing_when) {
+            throw new \Exception('Unexpected then() in when()');
+        }
 
-        $context->execute_actions();
-        $result = $context->execute_callback($callback);
-        return new TestResult($result, $context, $context->current_callback);
+        $this->executing_when = true;
+        $this->execute_actions();
+        $this->executing_when = false;
+        $result = $this->execute_callback($callback);
+        return new TestResult($result, $this, $this->current_callback);
     }
 
     private function execute_actions()
