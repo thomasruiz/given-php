@@ -1,0 +1,20 @@
+#!/usr/bin/php
+<?php
+
+$files = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../vendor/autoload.php'
+];
+
+foreach ($files AS $file) {
+    if (file_exists($file)) {
+        require $file;
+
+        $runner = new GivenPHP\Runner;
+        $runner->run();
+
+        exit(0);
+    }
+}
+
+throw new Exception('You need composer to use this.');

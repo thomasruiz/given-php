@@ -34,7 +34,7 @@ class TestSuite
         $this->executing_when = true;
         $this->execute_actions();
         $this->executing_when = false;
-        $result = $this->execute_callback($callback);
+        $result               = $this->execute_callback($callback);
         return new TestResult($result, $this, $this->current_callback);
     }
 
@@ -47,7 +47,7 @@ class TestSuite
 
     private function execute_callback($action)
     {
-        $callback = new EnhancedCallback($action);
+        $callback               = new EnhancedCallback($action);
         $this->current_callback = $callback;
         return $callback($this);
     }

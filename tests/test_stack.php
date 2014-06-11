@@ -1,9 +1,5 @@
 <?php
 
-require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../src/utils.php';
-require 'Stack.php';
-
 describe('Stack', function () {
     Given('stack', function ($initial_contents) {
         return new Stack($initial_contents);

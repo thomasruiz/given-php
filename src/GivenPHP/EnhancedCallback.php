@@ -1,5 +1,4 @@
 <?php
-
 namespace GivenPHP;
 
 use ReflectionFunction;
@@ -40,8 +39,8 @@ class EnhancedCallback
         $parameters      = $this->reflection->getParameters();
         $call_parameters = [ ];
         foreach ($parameters as $i => $param) {
-            $call_parameters[$i] = &$context->get_value($param->getName());
-            $call_parameters[$param->getName()] = &$call_parameters[$i];
+            $call_parameters[$i]                = & $context->get_value($param->getName());
+            $call_parameters[$param->getName()] = & $call_parameters[$i];
         }
 
         return $call_parameters;
@@ -56,7 +55,7 @@ class EnhancedCallback
         $file->seek($this->reflection->getStartLine());
 
         $code = '';
-        while ($file->key() <$this->reflection->getEndLine()) {
+        while ($file->key() < $this->reflection->getEndLine()) {
             $code .= $file->current();
             $file->next();
         }

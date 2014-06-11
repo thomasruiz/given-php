@@ -9,9 +9,15 @@
             "email": "thomas.ruiz.perso@gmail.com"
         }
     ],
+    "require": {
+        "nategood/commando": "*"
+    },
     "autoload": {
         "classmap": [
             "src/"
+        ],
+        "files": [
+            "src/utils.php"
         ]
     }
 }

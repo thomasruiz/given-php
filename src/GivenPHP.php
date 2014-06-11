@@ -7,6 +7,7 @@ require 'utils.php';
 
 // @todo Add a Formatter
 // @todo Handle PHP errors and exceptions
+// @todo Add a runner
 
 /**
  * Class GivenPHP
