@@ -12,10 +12,13 @@
     "require": {
         "nategood/commando": "*"
     },
+    "require-dev": {
+        "mockery/mockery": "dev-master"
+    },
     "autoload": {
         "classmap": [
             "src/",
-            "tests/"
+            "examples/"
         ],
         "files": [
             "src/utils.php"
