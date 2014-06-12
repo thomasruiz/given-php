@@ -4,6 +4,8 @@
 
 Please refer at the tests to know how to use this.
 
+*Note: This is still in active development, even not ready for an alpha release.*
+
 ## Requirements
 
 * PHP 5.4.0 is required but using the latest version of PHP is highly recommended
