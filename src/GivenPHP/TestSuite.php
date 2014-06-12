@@ -2,6 +2,7 @@
 
 namespace GivenPHP;
 
+use Closure;
 use Exception;
 
 /**
@@ -95,8 +96,11 @@ class TestSuite
      */
     private function execute_actions()
     {
-        foreach ($this->actions AS $action) {
-            $this->execute_callback($action);
+        foreach ($this->actions AS $key => $action) {
+            $result = $this->execute_callback($action);
+            if (is_string($key)) {
+                $this->parsed_data[$key] = $result;
+            }
         }
     }
 
@@ -157,7 +161,7 @@ class TestSuite
     public function &get_value($name)
     {
         if (!isset($this->parsed_data[$name])) {
-            if (is_callable($this->data[$name]) && !is_object($this->data[$name])) {
+            if ($this->data[$name] instanceof Closure) {
                 $this->parsed_data[$name] = $this->execute_callback($this->data[$name]);
             } else {
                 $this->parsed_data[$name] = $this->data[$name];
@@ -170,11 +174,16 @@ class TestSuite
     /**
      * Add an action to be run before the test (used in when)
      *
-     * @param callable $callback
+     * @param string|callable $name
+     * @param callable        $callback
      */
-    public function add_action($callback)
+    public function add_action($name, $callback)
     {
-        $this->actions[] = $callback;
+        if (!is_string($name)) {
+            $this->actions[] = $name;
+        } else {
+            $this->actions[$name] = $callback;
+        }
     }
 
     /**

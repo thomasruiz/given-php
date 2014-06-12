@@ -8,29 +8,29 @@ describe('Stack', function () {
     });
 
     context('with no items', function () {
-        Given('initial_contents', function () {
+        given('initial_contents', function () {
             return [ ];
         });
 
-        When(function (Stack $stack) {
+        when(function (Stack $stack) {
             $stack->push(3);
         });
 
-        Then(function (Stack $stack) {
+        then(function (Stack $stack) {
             return $stack->size() === 1;
         });
     });
 
     context('with one item', function () {
-        Given('initial_contents', function () {
+        given('initial_contents', function () {
             return [ 'an item' ];
         });
 
-        When(function (Stack $stack) {
+        when(function (Stack $stack) {
             $stack->push('another item');
         });
 
-        Then(function (Stack $stack) {
+        then(function (Stack $stack) {
             return $stack->size() === 2;
         });
     });

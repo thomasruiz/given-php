@@ -135,6 +135,6 @@ FAILURE;
      */
     private function format_value($value)
     {
-        return is_array($value) ? 'Array(' . count($value) . ')' : is_object($value) ? get_class($value) : $value;
+        return is_array($value) ? 'Array(' . count($value) . ')' : (is_object($value) ? get_class($value) : $value);
     }
 }

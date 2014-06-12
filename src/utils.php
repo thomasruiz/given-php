@@ -50,13 +50,15 @@ if (!function_exists('when')) {
     /**
      * @see GivenPHP::when
      *
+     * @param $name
      * @param $callback
      *
      * @return void
      */
-    function when($callback)
+    function when($name, $callback = null)
     {
-        GivenPHP::get_instance()->when($callback);
+
+        GivenPHP::get_instance()->when($name, $callback);
     }
 }
 

@@ -162,13 +162,14 @@ class GivenPHP
      * The when keyword
      * Add a callback to be run whenever a then is called
      *
+     * @param $name
      * @param $callback
      *
      * @return void
      */
-    public function when($callback)
+    public function when($name, $callback = null)
     {
-        $this->current_suite->add_action($callback);
+        $this->current_suite->add_action($name, $callback);
     }
 
     /**
