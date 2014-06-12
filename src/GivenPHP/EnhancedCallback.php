@@ -40,13 +40,14 @@ class EnhancedCallback
     /**
      * Run the callback
      *
-     * @param TestSuite $context
+     * @param bool|\GivenPHP\TestSuite $context
+     * @param array                    $parameters
      *
      * @return mixed
      */
-    public function __invoke($context)
+    public function __invoke($context = false, $parameters = [ ])
     {
-        $call_parameters = $this->parameters($context);
+        $call_parameters = $context ? $this->parameters($context, false) : $parameters;
 
         return call_user_func_array($this->callback, $call_parameters);
     }
@@ -55,18 +56,21 @@ class EnhancedCallback
      * Retrieve the parameters from the context according to their name in the callback function
      *
      * @param TestSuite $context
+     * @param bool      $with_names
      *
      * @return array
      */
-    public function parameters($context)
+    public function parameters($context, $with_names = true)
     {
         $parameters      = $this->reflection->getParameters();
         $call_parameters = [ ];
         foreach ($parameters as $i => $param) {
-            $call_parameters[$i]                = & $context->get_value($param->getName());
-            $call_parameters[$param->getName()] = & $call_parameters[$i];
-        }
+            $call_parameters[$i] = & $context->get_value($param->getName());
 
+            if ($with_names) {
+                $call_parameters[$param->getName()] = & $call_parameters[$i];
+            }
+        }
         return $call_parameters;
     }
 

@@ -36,12 +36,13 @@ if (!function_exists('given')) {
      *
      * @param $name
      * @param $value
+     * @param $is_parsed
      *
      * @return void
      */
-    function given($name, $value)
+    function given($name, $value, $is_parsed = false)
     {
-        GivenPHP::get_instance()->given($name, $value);
+        GivenPHP::get_instance()->given($name, $value, $is_parsed);
     }
 }
 

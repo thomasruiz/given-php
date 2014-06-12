@@ -58,7 +58,7 @@ class GivenPHP
     /**
      * Constructor
      */
-    public function __construct()
+    private function __construct()
     {
         echo 'GivenPHP v' . self::VERSION . PHP_EOL . PHP_EOL;
     }
@@ -149,12 +149,13 @@ class GivenPHP
      *
      * @param $name
      * @param $value
+     * @param $is_parsed
      *
      * @return void
      */
-    public function given($name, $value)
+    public function given($name, $value, $is_parsed = false)
     {
-        $this->current_suite->add_value($name, $value);
+        $this->current_suite->add_value($name, $value, $is_parsed);
     }
 
     /**

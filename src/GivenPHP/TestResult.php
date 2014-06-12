@@ -2,6 +2,8 @@
 
 namespace GivenPHP;
 
+use Exception;
+
 /**
  * Class TestResult
  *
@@ -41,8 +43,8 @@ class TestResult
     /**
      * Constructor
      *
-     * @param boolean $result
-     * @param TestSuite $context
+     * @param boolean          $result
+     * @param TestSuite        $context
      * @param EnhancedCallback $callback
      */
     public function __construct($result, $context, EnhancedCallback $callback)
@@ -52,8 +54,8 @@ class TestResult
         $this->callback = $callback;
 
         try {
-            throw new \Exception;
-        } catch (\Exception $e) {
+            throw new Exception;
+        } catch (Exception $e) {
             $this->stack = $e->getTrace();
         }
     }
@@ -88,6 +90,7 @@ class TestResult
      * Render a failing test
      *
      * @param $n
+     *
      * @return void
      */
     public function render($n)
@@ -132,6 +135,6 @@ FAILURE;
      */
     private function format_value($value)
     {
-        return is_object($value) || is_array($value) ? gettype($value) : $value;
+        return is_array($value) ? 'Array(' . count($value) . ')' : is_object($value) ? get_class($value) : $value;
     }
 }

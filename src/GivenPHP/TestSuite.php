@@ -119,6 +119,7 @@ class TestSuite
      * Add a better description to the current test (used in context)
      *
      * @param string $description
+     *
      * @return void
      */
     public function add_description($description)
@@ -129,15 +130,20 @@ class TestSuite
     /**
      * Add a value to be parsed (used in given)
      *
-     * @param string $name
-     * @param mixed $value
+     * @param string  $name
+     * @param mixed   $value
+     * @param boolean $is_parsed
      */
-    public function add_value($name, $value)
+    public function add_value($name, $value, $is_parsed)
     {
         $this->data[$name] = $value;
 
         if (isset($this->parsed_data[$name])) {
             unset($this->parsed_data[$name]);
+        }
+
+        if ($is_parsed) {
+            $this->parsed_data[$name] = $value;
         }
     }
 
@@ -151,7 +157,7 @@ class TestSuite
     public function &get_value($name)
     {
         if (!isset($this->parsed_data[$name])) {
-            if (is_callable($this->data[$name])) {
+            if (is_callable($this->data[$name]) && !is_object($this->data[$name])) {
                 $this->parsed_data[$name] = $this->execute_callback($this->data[$name]);
             } else {
                 $this->parsed_data[$name] = $this->data[$name];
