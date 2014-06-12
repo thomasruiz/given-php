@@ -2,33 +2,48 @@
 
 namespace GivenPHP;
 
+/**
+ * Class TestResult
+ *
+ * @package GivenPHP
+ */
 class TestResult
 {
 
     /**
+     * Whether the test passed or failed
+     *
      * @var boolean $result
      */
     private $result;
 
     /**
+     * The context of the test
+     *
      * @var TestSuite $context
      */
     private $context;
 
     /**
+     * The test that actually failed/passed
+     *
      * @var EnhancedCallback $callback
      */
     private $callback;
 
     /**
-     * @var array $stack
+     * The stack of errors in case of a failed test
+     *
+     * @var string[] $stack
      */
     private $stack;
 
     /**
-     * @param                             $result
-     * @param                             $context
-     * @param \GivenPHP\EnhancedCallback  $callback
+     * Constructor
+     *
+     * @param boolean $result
+     * @param TestSuite $context
+     * @param EnhancedCallback $callback
      */
     public function __construct($result, $context, EnhancedCallback $callback)
     {
@@ -43,22 +58,38 @@ class TestResult
         }
     }
 
+    /**
+     * Return true if the test failed, false otherwise
+     *
+     * @return bool
+     */
     public function is_error()
     {
         return $this->result === false;
     }
 
+    /**
+     * Output a summary for a failing test
+     *
+     * @return void
+     */
     public function summary()
     {
         echo PHP_EOL . PHP_EOL;
 
-        $red   = chr(27) . '[31m';
-        $blue  = chr(27) . '[34m';
+        $red  = chr(27) . '[31m';
+        $blue = chr(27) . '[34m';
 
-        echo $red . $this->callback->file() . ':' . $this->callback->line() . $blue . ' # ' . $this->context->description() .
-             '  Then { ' . $this->callback->code() . ' } ';
+        echo $red . $this->callback->file() . ':' . $this->callback->line() . $blue . ' # ' .
+             $this->context->description() . '  Then { ' . $this->callback->code() . ' } ';
     }
 
+    /**
+     * Render a failing test
+     *
+     * @param $n
+     * @return void
+     */
     public function render($n)
     {
         echo PHP_EOL . PHP_EOL;
@@ -92,7 +123,15 @@ FAILURE;
         echo $white;
     }
 
-    private function format_value($value) {
+    /**
+     * Return the type of the value or the value itself if printable
+     *
+     * @param $value
+     *
+     * @return string
+     */
+    private function format_value($value)
+    {
         return is_object($value) || is_array($value) ? gettype($value) : $value;
     }
 }

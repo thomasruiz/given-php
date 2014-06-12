@@ -4,13 +4,33 @@ namespace GivenPHP;
 use ReflectionFunction;
 use SplFileObject;
 
+/**
+ * Class EnhancedCallback
+ *
+ * @package GivenPHP
+ */
 class EnhancedCallback
 {
 
+    /**
+     * The actual callback
+     *
+     * @var callable
+     */
     private $callback;
 
+    /**
+     * The reflection about the callback
+     *
+     * @var ReflectionFunction
+     */
     private $reflection;
 
+    /**
+     * Constructor
+     *
+     * @param callable $callback
+     */
     public function __construct($callback)
     {
         $this->callback   = $callback;
@@ -18,6 +38,8 @@ class EnhancedCallback
     }
 
     /**
+     * Run the callback
+     *
      * @param TestSuite $context
      *
      * @return mixed
@@ -30,6 +52,8 @@ class EnhancedCallback
     }
 
     /**
+     * Retrieve the parameters from the context according to their name in the callback function
+     *
      * @param TestSuite $context
      *
      * @return array
@@ -47,6 +71,8 @@ class EnhancedCallback
     }
 
     /**
+     * Retrieve the code of the callback
+     *
      * @return string
      */
     public function code()
@@ -67,11 +93,21 @@ class EnhancedCallback
         return trim(str_replace('return', '', $code));
     }
 
+    /**
+     * Retrieve the line of the function
+     *
+     * @return int
+     */
     public function line()
     {
         return $this->reflection->getEndLine();
     }
 
+    /**
+     * Retrieve the file of the function
+     *
+     * @return string
+     */
     public function file()
     {
         return $this->reflection->getFileName();

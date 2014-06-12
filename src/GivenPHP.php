@@ -7,7 +7,6 @@ require 'utils.php';
 
 // @todo Add a Formatter
 // @todo Handle PHP errors and exceptions
-// @todo Add a runner
 
 /**
  * Class GivenPHP
@@ -15,43 +14,59 @@ require 'utils.php';
 class GivenPHP
 {
 
+    /**
+     * The current version of the framework
+     */
     const VERSION = '0.1.0';
 
     /**
-     * @var static $instance
+     * Singleton
+     *
+     * @static
+     * @var GivenPHP $instance
      */
     private static $instance = null;
 
     /**
+     * The list of the test suites to run
+     *
      * @var TestSuite[] $suites
      */
-    private $suites;
+    private $suites = [ ];
 
     /**
+     * The current test suite running
+     *
      * @var TestSuite $current_suite
      */
-    private $current_suite;
+    private $current_suite = null;
 
     /**
+     * The list of the errors of every tests
+     *
      * @var TestResult[] $errors
      */
-    private $errors;
+    private $errors = [ ];
 
     /**
+     * The list of the results of every tests
+     *
      * @var TestResult[] $results
      */
-    private $results;
+    private $results = [ ];
 
+    /**
+     * Constructor
+     */
     public function __construct()
     {
-        $this->suites        = [ ];
-        $this->current_suite = null;
-        $this->errors        = [ ];
-        $this->results       = [ ];
-
         echo 'GivenPHP v' . self::VERSION . PHP_EOL . PHP_EOL;
     }
 
+    /**
+     * Destructor
+     * Print the result when the script ends
+     */
     public function __destruct()
     {
         if (!empty($this->errors)) {
@@ -77,6 +92,8 @@ class GivenPHP
     }
 
     /**
+     * Singleton
+     *
      * @return static
      */
     public static function get_instance()
@@ -89,8 +106,14 @@ class GivenPHP
     }
 
     /**
+     * The describe keyword
+     * Initialize a new TestSuite
+     * This should be used only once per test file
+     *
      * @param string   $description
      * @param callback $callback
+     *
+     * @return void
      */
     public function describe($description, $callback)
     {
@@ -100,6 +123,15 @@ class GivenPHP
         $callback();
     }
 
+    /**
+     * The context keyword
+     * Isolates the tests ran in $callback
+     *
+     * @param $description
+     * @param $callback
+     *
+     * @return void
+     */
     public function context($description, $callback)
     {
         // Ensure that the base context is clean for further contexts
@@ -111,20 +143,48 @@ class GivenPHP
         $this->current_suite = $state;
     }
 
+    /**
+     * The given keyword
+     * Initialize a new value for the test
+     *
+     * @param $name
+     * @param $value
+     *
+     * @return void
+     */
     public function given($name, $value)
     {
         $this->current_suite->add_value($name, $value);
     }
 
+    /**
+     * The when keyword
+     * Add a callback to be run whenever a then is called
+     *
+     * @param $callback
+     *
+     * @return void
+     */
     public function when($callback)
     {
         $this->current_suite->add_action($callback);
     }
 
+    /**
+     * The then keyword
+     * Run the actual test
+     * All given values needed will be parsed, and will execute every actions given by when
+     * Will store the result of the test for further use
+     *
+     * @param $callback
+     *
+     * @return void
+     * @throws Exception
+     */
     public function then($callback)
     {
-        $saved = clone $this->current_suite;
-        $result = $this->current_suite->run($callback);
+        $saved               = clone $this->current_suite;
+        $result              = $this->current_suite->run($callback);
         $this->current_suite = $saved;
 
         $this->results[] = $result;
