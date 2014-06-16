@@ -13,7 +13,8 @@
         "nategood/commando": "*"
     },
     "require-dev": {
-        "mockery/mockery": "dev-master"
+        "mockery/mockery": "dev-master",
+        "phpunit/php-code-coverage": "dev-master"
     },
     "autoload": {
         "classmap": [
