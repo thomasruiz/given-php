@@ -7,6 +7,7 @@ use GivenPHP;
 use PHP_CodeCoverage;
 use PHP_CodeCoverage_Exception;
 use PHP_CodeCoverage_Filter;
+use PHP_CodeCoverage_Report_Clover;
 use PHP_CodeCoverage_Report_HTML;
 
 /**
@@ -42,9 +43,29 @@ class Runner
     }
 
     /**
+     * Destructor
+     *
+     * @throws Exception
+     * @return void
+     */
+    public function __destruct()
+    {
+        if ($this->has_coverage()) {
+            if (($path = $this->cli->getOption('coverage-html')->getValue())) {
+                $writer = new PHP_CodeCoverage_Report_HTML;
+                $writer->process($this->coverage, $path);
+            }
+
+            if (($path = $this->cli->getOption('coverage-clover')->getValue())) {
+                $writer = new PHP_CodeCoverage_Report_Clover;
+                $writer->process($this->coverage, $path);
+            }
+        }
+    }
+
+    /**
      * Run a test file
      *
-     * @throws PHP_CodeCoverage_Exception
      * @return void
      */
     public function run()
@@ -52,20 +73,7 @@ class Runner
         $files = $this->cli->getArgumentValues();
 
         foreach ($files AS $file) {
-            if ($this->has_coverage()) {
-                $this->coverage->start($file);
-            }
-
             $this->recursive_run($file);
-
-            if ($this->has_coverage()) {
-                $this->coverage->stop();
-            }
-        }
-
-        if ($this->has_coverage()) {
-            $writer = new PHP_CodeCoverage_Report_HTML;
-            $writer->process($this->coverage, '/tmp/code-coverage-report');
         }
     }
 
@@ -75,6 +83,7 @@ class Runner
      *
      * @param string $file
      *
+     * @throws PHP_CodeCoverage_Exception
      * @return void
      */
     private function recursive_run($file)
@@ -82,7 +91,15 @@ class Runner
         if (is_dir($file)) {
             $this->explore_directory($file);
         } else if (strpos($file, 'test_') === strrpos($file, '/') + 1) {
+            if ($this->has_coverage()) {
+                $this->coverage->start($file);
+            }
+
             include $file;
+
+            if ($this->has_coverage()) {
+                $this->coverage->stop();
+            }
         }
     }
 
@@ -123,14 +140,18 @@ class Runner
     /**
      * Return true if the code coverage is activated, false otherwise
      *
-     * @throws Exception
      * @return boolean
      */
     private function has_coverage()
     {
         if (!is_bool($this->has_coverage)) {
-            $this->has_coverage = $this->cli->getOption('coverage-html')->getValue() ||
-                                  $this->cli->getOption('coverage-clover')->getValue();
+            $types = [ 'html', 'clover' ];
+
+            $this->has_coverage = false;
+
+            foreach ($types AS $type) {
+                $this->has_coverage = $this->has_coverage || isset($this->cli->getFlagValues()['coverage-' . $type]);
+            }
         }
 
         return $this->has_coverage;
