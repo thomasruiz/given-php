@@ -90,10 +90,11 @@ class TestResult
      * Render a failing test
      *
      * @param $n
+     * @param $label
      *
      * @return void
      */
-    public function render($n)
+    public function render($n, $label)
     {
         echo PHP_EOL . PHP_EOL;
 
@@ -101,10 +102,22 @@ class TestResult
         $blue  = chr(27) . '[34m';
         $white = chr(27) . '[0m';
 
+        $completeLabel = '';
+        if ($label !== null) {
+            $labels = $this->context->labels();
+            foreach ($labels as $i => $l) {
+                if (!$l->isEmpty()) {
+                    $completeLabel .= '       ' . $l . ' -> ' . $this->context->get_value($i) . PHP_EOL;
+                }
+            }
+            $completeLabel .= '       Then ' . $label . PHP_EOL;
+        }
+
         echo <<<FAILURE
   $n) {$this->context->description()}   Then { {$this->callback->code()} }
 
      {$red}Failure/Error: Then { {$this->callback->code()} }
+$completeLabel
        Then expression failed at {$this->callback->file()}:{$this->callback->line()}
 FAILURE;
 

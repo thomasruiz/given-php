@@ -20,6 +20,11 @@ class GivenPHP
     const VERSION = '0.1.0';
 
     /**
+     * The defualt value for given, when and then statements
+     */
+    const EMPTY_VALUE = 'GIVEN_PHP_EMPTY_VALUE';
+
+    /**
      * Singleton
      *
      * @static
@@ -32,7 +37,14 @@ class GivenPHP
      *
      * @var TestSuite[] $suites
      */
-    private $suites = [ ];
+    private $suites = [];
+
+    /**
+     * The verbose labels of tests
+     *
+     * @var array
+     */
+    private $labels = [];
 
     /**
      * The current test suite running
@@ -46,14 +58,14 @@ class GivenPHP
      *
      * @var TestResult[] $errors
      */
-    private $errors = [ ];
+    private $errors = [];
 
     /**
      * The list of the results of every tests
      *
      * @var TestResult[] $results
      */
-    private $results = [ ];
+    private $results = [];
 
     /**
      * Constructor
@@ -71,7 +83,7 @@ class GivenPHP
     {
         if (!empty($this->errors)) {
             foreach ($this->errors AS $i => $error) {
-                $error->render($i + 1);
+                $error->render($i + 1, $this->labels[$i]);
             }
 
             echo PHP_EOL . PHP_EOL . chr(27) . '[31m' . count($this->results) . ' examples, ' . count($this->errors) .
@@ -150,12 +162,13 @@ class GivenPHP
      * @param $name
      * @param $value
      * @param $is_parsed
+     * @param $label
      *
      * @return void
      */
-    public function given($name, $value, $is_parsed = false)
+    public function given($name, $value, $is_parsed = false, $label = null)
     {
-        $this->current_suite->add_value($name, $value, $is_parsed);
+        $this->current_suite->add_value($name, $value, $is_parsed, $label);
     }
 
     /**
@@ -164,12 +177,13 @@ class GivenPHP
      *
      * @param $name
      * @param $callback
+     * @param $label
      *
      * @return void
      */
-    public function when($name, $callback = null)
+    public function when($name, $callback = null, $label = null)
     {
-        $this->current_suite->add_action($name, $callback);
+        $this->current_suite->add_action($name, $callback, $label);
     }
 
     /**
@@ -179,11 +193,12 @@ class GivenPHP
      * Will store the result of the test for further use
      *
      * @param $callback
+     * @param $label
      *
      * @return void
      * @throws Exception
      */
-    public function then($callback)
+    public function then($callback, $label)
     {
         $saved               = clone $this->current_suite;
         $result              = $this->current_suite->run($callback);
@@ -192,6 +207,7 @@ class GivenPHP
         $this->results[] = $result;
         if ($result->is_error()) {
             $this->errors[] = $result;
+            $this->labels[] = $label;
             echo chr(27) . '[31mF' . chr(27) . '[0m';
         } else {
             echo '.';

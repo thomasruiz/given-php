@@ -26,14 +26,21 @@ class TestSuite
      *
      * @var array
      */
-    private $data = [ ];
+    private $data = [];
 
     /**
      * The list of the functions to execute added by the 'when' function
      *
      * @var callable[]
      */
-    private $actions = [ ];
+    private $actions = [];
+
+    /**
+     * The verbose labels of values and actions
+     *
+     * @var array
+     */
+    private $labels = [];
 
     /**
      * This is to prevent the use of 'then' in a 'when', causing an infinite loop
@@ -47,7 +54,7 @@ class TestSuite
      *
      * @var array
      */
-    private $parsed_data = [ ];
+    private $parsed_data = [];
 
     /**
      * The last callback executed
@@ -137,10 +144,12 @@ class TestSuite
      * @param string  $name
      * @param mixed   $value
      * @param boolean $is_parsed
+     * @param string  $label
      */
-    public function add_value($name, $value, $is_parsed)
+    public function add_value($name, $value, $is_parsed, $label)
     {
-        $this->data[$name] = $value;
+        $this->data[$name]   = $value;
+        $this->labels[$name] = new Label(Label::GIVEN, $label, $name);
 
         if (isset($this->parsed_data[$name])) {
             unset($this->parsed_data[$name]);
@@ -176,13 +185,16 @@ class TestSuite
      *
      * @param string|callable $name
      * @param callable        $callback
+     * @param string          $label
      */
-    public function add_action($name, $callback)
+    public function add_action($name, $callback, $label)
     {
         if (!is_string($name)) {
-            $this->actions[] = $name;
+            $this->actions[]                         = $name;
+            $this->labels[count($this->actions) - 1] = new Label(Label::WHEN, $label);
         } else {
             $this->actions[$name] = $callback;
+            $this->labels[$name]  = new Label(Label::WHEN, $label, $name);;
         }
     }
 
@@ -194,5 +206,27 @@ class TestSuite
     public function description()
     {
         return $this->description;
+    }
+
+    /**
+     * Return the corresponding label for the given name
+     *
+     * @param $name
+     *
+     * @return string
+     */
+    public function labelFor($name)
+    {
+        return (isset($this->labels[$name]) ? $this->labels[$name] : $name);
+    }
+
+    /**
+     * Return the labels array
+     *
+     * @return array
+     */
+    public function labels()
+    {
+        return $this->labels;
     }
 }
