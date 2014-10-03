@@ -135,6 +135,16 @@ class Runner
             ->describedAs('Generate a code coverage report in HTML.');
         $this->cli->option('coverage-clover')
             ->describedAs('Generate a code coverage report in Clover XML.');
+        $this->cli->option('r')->aka('reporter')->defaultsTo('GivenPHP\DefaultReporter')
+            ->describedAs('Set the output reporter')
+            ->must(function ($reporter) {
+                $reporters = array('default', 'tap');
+                return in_array(strtolower($reporter), $reporters);
+            })
+            ->map(function ($reporter) {
+                return 'GivenPHP\\' . ucfirst(strtolower($reporter)) . 'Reporter';
+            });
+        $GLOBALS['cli'] = $this->cli;
     }
 
     /**

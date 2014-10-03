@@ -72,7 +72,10 @@ class GivenPHP
      */
     private function __construct()
     {
-        echo 'GivenPHP v' . self::VERSION . PHP_EOL . PHP_EOL;
+        $cli = $GLOBALS['cli'];
+        $reporter = $cli->getOption('reporter')->getValue();
+        $this->reporter = new $reporter;
+        $this->reporter->reportStart(self::VERSION);
     }
 
     /**
@@ -81,26 +84,8 @@ class GivenPHP
      */
     public function __destruct()
     {
-        if (!empty($this->errors)) {
-            foreach ($this->errors AS $i => $error) {
-                $error->render($i + 1, $this->labels[$i]);
-            }
-
-            echo PHP_EOL . PHP_EOL . chr(27) . '[31m' . count($this->results) . ' examples, ' . count($this->errors) .
-                 ' failures';
-
-            echo PHP_EOL . PHP_EOL . chr(27) . '[0m' . 'Failed examples:';
-
-            foreach ($this->errors AS $error) {
-                $error->summary();
-            }
-
-            echo PHP_EOL;
-        } else {
-            echo PHP_EOL . PHP_EOL . chr(27) . '[32m' . count($this->results) . ' examples, 0 failures';
-        }
-
-        echo chr(27) . '[0m' . PHP_EOL;
+        $totalResults = count($this->results);
+        $this->reporter->reportEnd($totalResults, $this->errors, $this->labels, $this->results);
     }
 
     /**
@@ -111,7 +96,7 @@ class GivenPHP
     public static function get_instance()
     {
         if (static::$instance === null) {
-            static::$instance = new static;
+            static::$instance = new static();
         }
 
         return static::$instance;
@@ -208,9 +193,13 @@ class GivenPHP
         if ($result->is_error()) {
             $this->errors[] = $result;
             $this->labels[] = $label;
-            echo chr(27) . '[31mF' . chr(27) . '[0m';
+            $testNumber      = count($this->results);
+            $testDescription = $this->current_suite->description();
+            $this->reporter->reportFailure($testNumber, $testDescription);
         } else {
-            echo '.';
+            $testNumber      = count($this->results);
+            $testDescription = $this->current_suite->description();
+            $this->reporter->reportSuccess($testNumber, $testDescription);
         }
     }
 }
