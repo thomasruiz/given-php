@@ -2,6 +2,7 @@
 namespace GivenPHP;
 
 use GivenPHP\IReporter;
+use GivenPHP\Output;
 
 class TapReporter implements IReporter
 {
@@ -11,14 +12,14 @@ class TapReporter implements IReporter
     }
 
     public function reportSuccess($count, $description) {
-        echo "ok {$count} {$description}" . PHP_EOL;
+        Output::message("ok {$count} {$description}" . PHP_EOL);
     }
 
     public function reportFailure($count, $description) {
-        echo "not ok {$count} {$description}" . PHP_EOL;
+        Output::message("not ok {$count} {$description}" . PHP_EOL);
     }
 
     public function reportEnd($total, $errors, $labels, $results) {
-        if ($total > 0) echo "1..{$total}" . PHP_EOL;
+        if ($total > 0) Output::message("1..{$total}" . PHP_EOL);
     }
 }
