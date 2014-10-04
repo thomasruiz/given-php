@@ -40,6 +40,11 @@ class Runner
         $this->cli = new Command();
         $this->initialize_options();
         $this->initialize_coverage_analysis();
+
+        //create reporter based on comand line args and setup the singleton
+        //with it.
+        $reporter = $this->cli->getOption('reporter')->getValue();
+        GivenPHP::get_instance(new $reporter);
     }
 
     /**
@@ -144,7 +149,6 @@ class Runner
             ->map(function ($reporter) {
                 return 'GivenPHP\\' . ucfirst(strtolower($reporter)) . 'Reporter';
             });
-        $GLOBALS['cli'] = $this->cli;
     }
 
     /**

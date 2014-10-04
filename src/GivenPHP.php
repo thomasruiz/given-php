@@ -2,6 +2,7 @@
 
 use GivenPHP\TestResult;
 use GivenPHP\TestSuite;
+use GivenPHP\IReporter;
 
 require 'utils.php';
 
@@ -70,11 +71,9 @@ class GivenPHP
     /**
      * Constructor
      */
-    private function __construct()
+    private function __construct(IReporter $reporter)
     {
-        $cli = $GLOBALS['cli'];
-        $reporter = $cli->getOption('reporter')->getValue();
-        $this->reporter = new $reporter;
+        $this->reporter = $reporter;
         $this->reporter->reportStart(self::VERSION);
     }
 
@@ -93,10 +92,16 @@ class GivenPHP
      *
      * @return static
      */
-    public static function get_instance()
+    public static function get_instance(IReporter $reporter = null)
     {
         if (static::$instance === null) {
-            static::$instance = new static();
+
+            //on singleton creation, pass a reporter class
+            $message = 'GivenPHP singleton must be instantiated with a reporter';
+            if ($reporter === null) {
+                throw new Exception($message);
+            }
+            static::$instance = new static($reporter);
         }
 
         return static::$instance;
