@@ -4,21 +4,38 @@ namespace GivenPHP;
 use GivenPHP\IReporter;
 use GivenPHP\Output;
 
+/**
+ * The default reporter for GivenPHP
+ * If no reporter is specified, this reporter will be used
+ */
 class DefaultReporter implements IReporter
 {
 
+    /**
+     * Outputs GivenPHP version and an empty line
+     */
     public function reportStart($version) {
         Output::message('GivenPHP v' . $version . PHP_EOL . PHP_EOL);
     }
 
+    /**
+     * Prints out a simple . character for each passing test
+     */
     public function reportSuccess($count, $description) {
         Output::message('.');
     }
 
+    /**
+     * Prints an F character for each failing test
+     */
     public function reportFailure($count, $description) {
         Output::message('F', Output::RED);
     }
 
+    /**
+     * Prints out a result summary and if there are any test failures,
+     * prints out error details
+     */
     public function reportEnd($total, $errors, $labels, $results) {
         if (!empty($errors)) {
             foreach ($errors AS $i => $error) {
