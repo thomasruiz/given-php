@@ -33,31 +33,47 @@ class DefaultReporter implements IReporter
     }
 
     /**
-     * Prints out a result summary and if there are any test failures,
-     * prints out error details
+     * Renders any errors with matching labels
      */
-    public function reportEnd($total, $errors, $labels, $results) {
-        if (!empty($errors)) {
-            foreach ($errors AS $i => $error) {
-                $error->render($i + 1, $labels[$i]);
-            }
+    private function renderErrors($errors, $labels) {
+        foreach ($errors AS $i => $error) $error->render($i + 1, $labels[$i]);
+    }
 
-            $message  = PHP_EOL . PHP_EOL;
-            $message .= $total . ' examples, ' . count($errors) . ' failures';
-            Output::message($message, Output::RED);
-            
+    /**
+     * Renders a status message using total and totalErrors values
+     * @example 10 examples, 2 failures
+     * @param int $total
+     * @param int $totalErrors
+     */
+    private function renderStatusMessage($total, $totalErrors) {
+        $hasErrors = $totalErrors > 0;
+        $message  = PHP_EOL . PHP_EOL;
+        $message .= $total . ' examples, ' . $totalErrors . ' failures';
+        Output::message($message, $hasErrors ?  Output::RED : Output::GREEN);
+    }
+
+    /**
+     * Renders a 'Failed examples' error summary block 
+     */
+    private function renderErrorSummaries($errors) {
+        if (!empty($errors)) 
             Output::message(PHP_EOL . PHP_EOL . 'Failed examples:');
 
-            foreach ($errors AS $error) {
-                $error->summary();
-            }
+        foreach ($errors AS $error) $error->summary();
+    }
 
-            Output::message(PHP_EOL);
-        } else {
-            $message = PHP_EOL . PHP_EOL . $total . ' examples, 0 failures';
-            Output::message($message, Output::GREEN);
-        }
-
+    /**
+     * Prints out a result summary and if there are any test failures,
+     * prints out error details
+     * @param  int $total     - total number of tests run
+     * @param  array $errors  - array of error objects
+     * @param  array $labels  - array of labels corresponding to errors
+     * @param  array $results - array of results
+     */
+    public function reportEnd($total, $errors, $labels, $results) {
+        $this->renderErrors($errors, $labels);
+        $this->renderStatusMessage($total, count($errors));
+        $this->renderErrorSummaries($errors);
         Output::message(PHP_EOL);
     }
 }
