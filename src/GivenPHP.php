@@ -1,12 +1,12 @@
 <?php
 
+use GivenPHP\Reporter\DefaultReporter;
 use GivenPHP\TestResult;
 use GivenPHP\TestSuite;
-use GivenPHP\IReporter;
+use GivenPHP\Reporter\IReporter;
 
 require 'utils.php';
 
-// @todo Add a Formatter
 // @todo Handle PHP errors and exceptions
 
 /**
@@ -69,12 +69,23 @@ class GivenPHP
     private $results = [];
 
     /**
+     * The reporter used for output
+     *
+     * @var IReporter
+     */
+    private $reporter;
+
+    /**
+     * @var boolean
+     */
+    private $isStarted = false;
+
+    /**
      * Constructor
      */
-    private function __construct(IReporter $reporter)
+    private function __construct()
     {
-        $this->reporter = $reporter;
-        $this->reporter->reportStart(self::VERSION);
+        $this->setReporter(new DefaultReporter());
     }
 
     /**
@@ -92,19 +103,39 @@ class GivenPHP
      *
      * @return static
      */
-    public static function get_instance(IReporter $reporter = null)
+    public static function get_instance()
     {
         if (static::$instance === null) {
-
-            //on singleton creation, pass a reporter class
-            $message = 'GivenPHP singleton must be instantiated with a reporter';
-            if ($reporter === null) {
-                throw new Exception($message);
-            }
-            static::$instance = new static($reporter);
+            static::$instance = new static();
         }
 
         return static::$instance;
+    }
+
+    public function start()
+    {
+        if ($this->isStarted) {
+            throw new Exception('The test is already started');
+        }
+
+        $this->isStarted = true;
+        $this->reporter->reportStart(self::VERSION);
+    }
+
+    /**
+     * Set the reporter to be used
+     *
+     * @param IReporter $reporter
+     *
+     * @throws Exception
+     */
+    public function setReporter(IReporter $reporter)
+    {
+        if ($this->isStarted) {
+            throw new Exception('Unable to change the reporter when the test is already started');
+        }
+
+        $this->reporter = $reporter;
     }
 
     /**

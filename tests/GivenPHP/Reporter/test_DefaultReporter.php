@@ -1,6 +1,6 @@
 <?php
 
-use GivenPHP\DefaultReporter;
+use GivenPHP\Reporter\DefaultReporter;
 use Mockery as m;
 
 class MockError {

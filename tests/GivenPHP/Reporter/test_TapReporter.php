@@ -1,6 +1,6 @@
 <?php
 
-use GivenPHP\TapReporter;
+use GivenPHP\Reporter\TapReporter;
 
 describe('The tap test reporter', function() {
 

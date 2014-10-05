@@ -1,11 +1,13 @@
 <?php
-namespace GivenPHP;
+namespace GivenPHP\Reporter;
 
-Interface IReporter {
+Interface IReporter
+{
 
     /**
      * Called at the start of a test run, should be used to print out any
      * intial reporter information
+     *
      * @param  string $version - GivenPHP version
      */
     public function reportStart($version);
@@ -13,6 +15,7 @@ Interface IReporter {
     /**
      * Called to report a successful test, should be called for each test
      * that passes
+     *
      * @param  int    $count       - the number of tests executed so far
      * @param  string $description - description of the passing test
      */
@@ -21,6 +24,7 @@ Interface IReporter {
     /**
      * Called to report a failing test, should be called for each test that
      * fails
+     *
      * @param  int    $count       - the number of tests executed so far
      * @param  string $description - description of the failing test
      */
@@ -29,7 +33,8 @@ Interface IReporter {
     /**
      * Called at the end of a test run, should be used to print out any
      * final reporter information
-     * @param  int $total     - total number of tests run
+     *
+     * @param  int   $total   - total number of tests run
      * @param  array $errors  - array of error objects
      * @param  array $labels  - array of labels corresponding to errors
      * @param  array $results - array of results
