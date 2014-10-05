@@ -74,6 +74,7 @@ class Runner
      */
     public function run()
     {
+        GivenPHP::get_instance()->start();
         $files = $this->cli->getArgumentValues();
 
         foreach ($files AS $file) {
