@@ -1,7 +1,9 @@
 <?php
 namespace GivenPHP\Reporter;
 
+use GivenPHP\Label;
 use GivenPHP\Output;
+use GivenPHP\TestResult;
 
 /**
  * The default reporter for GivenPHP
@@ -45,8 +47,8 @@ class DefaultReporter implements IReporter
     /**
      * Renders any errors with matching labels
      *
-     * @param $errors
-     * @param $labels
+     * @param TestResult[] $errors
+     * @param Label[]      $labels
      */
     private function renderErrors($errors, $labels)
     {
@@ -57,8 +59,6 @@ class DefaultReporter implements IReporter
 
     /**
      * Renders a status message using total and totalErrors values
-     *
-     * @example 10 examples, 2 failures
      *
      * @param int $total
      * @param int $totalErrors
@@ -73,7 +73,7 @@ class DefaultReporter implements IReporter
     /**
      * Renders a 'Failed examples' error summary block
      *
-     * @param $errors
+     * @param TestResult[] $errors
      */
     private function renderErrorSummaries($errors)
     {
@@ -90,10 +90,10 @@ class DefaultReporter implements IReporter
      * Prints out a result summary and if there are any test failures,
      * prints out error details
      *
-     * @param  int   $total   - total number of tests run
-     * @param  array $errors  - array of error objects
-     * @param  array $labels  - array of labels corresponding to errors
-     * @param  array $results - array of results
+     * @param int          $total   - total number of tests run
+     * @param TestResult[] $errors  - array of error objects
+     * @param Label[]      $labels  - array of labels corresponding to errors
+     * @param TestResult[] $results - array of results
      */
     public function reportEnd($total, $errors, $labels, $results)
     {

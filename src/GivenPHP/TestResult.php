@@ -89,8 +89,8 @@ class TestResult
     /**
      * Render a failing test
      *
-     * @param $n
-     * @param $label
+     * @param int    $n
+     * @param string $label
      *
      * @return void
      */
@@ -142,7 +142,7 @@ FAILURE;
     /**
      * Return the type of the value or the value itself if printable
      *
-     * @param $value
+     * @param mixed $value
      *
      * @return string
      */

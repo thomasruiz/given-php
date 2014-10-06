@@ -1,9 +1,9 @@
 <?php
 
 use GivenPHP\Reporter\DefaultReporter;
+use GivenPHP\Reporter\IReporter;
 use GivenPHP\TestResult;
 use GivenPHP\TestSuite;
-use GivenPHP\Reporter\IReporter;
 
 require 'utils.php';
 
@@ -21,7 +21,7 @@ class GivenPHP
     const VERSION = '0.1.0';
 
     /**
-     * The defualt value for given, when and then statements
+     * The default value for given, when and then statements
      */
     const EMPTY_VALUE = 'GIVEN_PHP_EMPTY_VALUE';
 
@@ -43,7 +43,7 @@ class GivenPHP
     /**
      * The verbose labels of tests
      *
-     * @var array
+     * @var string[] $labels
      */
     private $labels = [];
 
@@ -55,14 +55,14 @@ class GivenPHP
     private $current_suite = null;
 
     /**
-     * The list of the errors of every tests
+     * The list of the errors of every test
      *
      * @var TestResult[] $errors
      */
     private $errors = [];
 
     /**
-     * The list of the results of every tests
+     * The list of the results of every test
      *
      * @var TestResult[] $results
      */
@@ -71,12 +71,14 @@ class GivenPHP
     /**
      * The reporter used for output
      *
-     * @var IReporter
+     * @var IReporter $reporter
      */
     private $reporter;
 
     /**
-     * @var boolean
+     * The started test, changed in start() method
+     *
+     * @var boolean $isStarted
      */
     private $isStarted = false;
 
@@ -112,6 +114,11 @@ class GivenPHP
         return static::$instance;
     }
 
+    /**
+     * Sets the state to started
+     *
+     * @throws Exception
+     */
     public function start()
     {
         if ($this->isStarted) {
@@ -160,8 +167,8 @@ class GivenPHP
      * The context keyword
      * Isolates the tests ran in $callback
      *
-     * @param $description
-     * @param $callback
+     * @param string   $description
+     * @param callback $callback
      *
      * @return void
      */
@@ -180,10 +187,10 @@ class GivenPHP
      * The given keyword
      * Initialize a new value for the test
      *
-     * @param $name
-     * @param $value
-     * @param $is_parsed
-     * @param $label
+     * @param string  $name
+     * @param mixed   $value
+     * @param boolean $is_parsed
+     * @param string  $label
      *
      * @return void
      */
@@ -196,9 +203,9 @@ class GivenPHP
      * The when keyword
      * Add a callback to be run whenever a then is called
      *
-     * @param $name
-     * @param $callback
-     * @param $label
+     * @param string   $name
+     * @param callback $callback
+     * @param string   $label
      *
      * @return void
      */
@@ -213,8 +220,8 @@ class GivenPHP
      * All given values needed will be parsed, and will execute every actions given by when
      * Will store the result of the test for further use
      *
-     * @param $callback
-     * @param $label
+     * @param callback $callback
+     * @param string   $label
      *
      * @return void
      * @throws Exception
@@ -225,16 +232,14 @@ class GivenPHP
         $result              = $this->current_suite->run($callback);
         $this->current_suite = $saved;
 
+        $testNumber      = count($this->results);
+        $testDescription = $this->current_suite->description();
         $this->results[] = $result;
         if ($result->is_error()) {
             $this->errors[] = $result;
             $this->labels[] = $label;
-            $testNumber      = count($this->results);
-            $testDescription = $this->current_suite->description();
             $this->reporter->reportFailure($testNumber, $testDescription);
         } else {
-            $testNumber      = count($this->results);
-            $testDescription = $this->current_suite->description();
             $this->reporter->reportSuccess($testNumber, $testDescription);
         }
     }

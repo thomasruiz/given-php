@@ -1,7 +1,9 @@
 <?php
 namespace GivenPHP\Reporter;
 
+use GivenPHP\Label;
 use GivenPHP\Output;
+use GivenPHP\TestResult;
 
 class TapReporter implements IReporter
 {
@@ -44,9 +46,9 @@ class TapReporter implements IReporter
      * we have chosen after since we then know how many tests were run
      *
      * @param int   $total
-     * @param array $errors
-     * @param array $labels
-     * @param array $results
+     * @param TestResult[] $errors
+     * @param Label[] $labels
+     * @param TestResult[] $results
      */
     public function reportEnd($total, $errors, $labels, $results)
     {

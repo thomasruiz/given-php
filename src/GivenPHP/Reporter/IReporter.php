@@ -1,6 +1,9 @@
 <?php
 namespace GivenPHP\Reporter;
 
+use GivenPHP\Label;
+use GivenPHP\TestResult;
+
 Interface IReporter
 {
 
@@ -8,7 +11,7 @@ Interface IReporter
      * Called at the start of a test run, should be used to print out any
      * intial reporter information
      *
-     * @param  string $version - GivenPHP version
+     * @param string $version - GivenPHP version
      */
     public function reportStart($version);
 
@@ -16,8 +19,8 @@ Interface IReporter
      * Called to report a successful test, should be called for each test
      * that passes
      *
-     * @param  int    $count       - the number of tests executed so far
-     * @param  string $description - description of the passing test
+     * @param int    $count       - the number of tests executed so far
+     * @param string $description - description of the passing test
      */
     public function reportSuccess($count, $description);
 
@@ -25,8 +28,8 @@ Interface IReporter
      * Called to report a failing test, should be called for each test that
      * fails
      *
-     * @param  int    $count       - the number of tests executed so far
-     * @param  string $description - description of the failing test
+     * @param int    $count       - the number of tests executed so far
+     * @param string $description - description of the failing test
      */
     public function reportFailure($count, $description);
 
@@ -34,10 +37,10 @@ Interface IReporter
      * Called at the end of a test run, should be used to print out any
      * final reporter information
      *
-     * @param  int   $total   - total number of tests run
-     * @param  array $errors  - array of error objects
-     * @param  array $labels  - array of labels corresponding to errors
-     * @param  array $results - array of results
+     * @param int          $total   - total number of tests run
+     * @param TestResult[] $errors  - array of error objects
+     * @param Label[]      $labels  - array of labels corresponding to errors
+     * @param TestResult[] $results - array of results
      */
     public function reportEnd($total, $errors, $labels, $results);
 }

@@ -14,6 +14,8 @@ class Output
     const WHITE = '[0m';
 
     /**
+     * Prints a message with a specific color (default to white)
+     *
      * @param string $message
      * @param string $color
      */
