@@ -44,7 +44,7 @@ if (!function_exists('given')) {
     {
         if ($value === GivenPHP::EMPTY_VALUE) {
             $value = $name;
-            $name = $label;
+            $name  = $label;
             $label = null;
         }
 
@@ -66,8 +66,8 @@ if (!function_exists('when')) {
     {
         if ($callback === GivenPHP::EMPTY_VALUE) {
             $callback = $name;
-            $name = $label;
-            $label = null;
+            $name     = $label;
+            $label    = null;
         }
 
         GivenPHP::get_instance()->when($name, $callback, $label);
@@ -86,9 +86,32 @@ if (!function_exists('then')) {
     {
         if ($callback === GivenPHP::EMPTY_VALUE) {
             $callback = $label;
-            $label = null;
+            $label    = null;
         }
 
         GivenPHP::get_instance()->then($callback, $label);
+    }
+}
+
+if (!function_exists('fails')) {
+    /**
+     * @see GivenPHP::fails
+     *
+     * @return \GivenPHP\Error
+     */
+    function fails()
+    {
+        return GivenPHP::get_instance()->fails();
+    }
+
+    /**
+     * @see GivenPHP::fails
+     *
+     * @param $e
+     *
+     * @return \GivenPHP\Error
+     */
+    function failsWith($e) {
+        return GivenPHP::get_instance()->fails($e);
     }
 }

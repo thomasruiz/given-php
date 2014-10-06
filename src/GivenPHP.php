@@ -1,5 +1,8 @@
 <?php
 
+use GivenPHP\EnhancedCallback;
+use GivenPHP\Error;
+use GivenPHP\Label;
 use GivenPHP\Reporter\DefaultReporter;
 use GivenPHP\Reporter\IReporter;
 use GivenPHP\TestResult;
@@ -43,7 +46,7 @@ class GivenPHP
     /**
      * The verbose labels of tests
      *
-     * @var string[] $labels
+     * @var Label[] $labels
      */
     private $labels = [];
 
@@ -228,19 +231,64 @@ class GivenPHP
      */
     public function then($callback, $label)
     {
-        $saved               = clone $this->current_suite;
-        $result              = $this->current_suite->run($callback);
+        $saved      = clone $this->current_suite;
+        $errorFound = false;
+
+        if ($callback instanceof Error) {
+            $callback = function () use ($callback) {
+                return $callback;
+            };
+        }
+
+        try {
+            $result = $this->current_suite->run($callback);
+        } catch (Exception $e) {
+            $result     = $this->errorHandling($e, $callback);
+            $errorFound = true;
+        }
+
         $this->current_suite = $saved;
 
         $testNumber      = count($this->results);
         $testDescription = $this->current_suite->description();
         $this->results[] = $result;
-        if ($result->is_error()) {
+
+        if ($result->is_error() || $this->current_suite->expectsFailure() && $errorFound === false) {
             $this->errors[] = $result;
             $this->labels[] = $label;
             $this->reporter->reportFailure($testNumber, $testDescription);
         } else {
             $this->reporter->reportSuccess($testNumber, $testDescription);
         }
+    }
+
+    /**
+     * @param Exception $e
+     * @param callable  $callback
+     *
+     * @return TestResult
+     */
+    private function errorHandling(Exception $e, $callback)
+    {
+        if ($this->current_suite->expectsFailure($e)) {
+            return new TestResult(true, $this->current_suite, new EnhancedCallback($callback));
+        }
+
+        return new TestResult(false, $this->current_suite, $this->current_suite->getLastCallback());
+    }
+
+    /**
+     * The fails and failsWith keywords
+     * These are used in case of expected failure from the tests
+     *
+     * @param Exception|bool $e
+     *
+     * @return Error
+     */
+    public function fails($e = true)
+    {
+        $this->current_suite->addExpectedFailure($e);
+
+        return new Error();
     }
 }
