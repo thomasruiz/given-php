@@ -16,16 +16,22 @@ class Label
     const WHEN = 'When ';
 
     /**
-     * @var string
+     * The label explaining the associated name
+     *
+     * @var string $label
      */
     private $label;
 
     /**
+     * The type of the label
+     *
      * @var string
      */
     private $type;
 
     /**
+     * The name of the value labelled
+     *
      * @var string
      */
     private $name;
@@ -33,9 +39,9 @@ class Label
     /**
      * Constructor
      *
-     * @param $type
-     * @param $label
-     * @param $associatedName
+     * @param string $type
+     * @param string $label
+     * @param string $associatedName
      */
     public function __construct($type, $label, $associatedName = null)
     {
@@ -45,6 +51,8 @@ class Label
     }
 
     /**
+     * Prints the label
+     *
      * @return string
      */
     public function __toString()

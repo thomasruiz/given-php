@@ -211,7 +211,7 @@ class TestSuite
     /**
      * Return the corresponding label for the given name
      *
-     * @param $name
+     * @param string $name
      *
      * @return string
      */

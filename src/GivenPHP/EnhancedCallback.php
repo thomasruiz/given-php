@@ -15,14 +15,14 @@ class EnhancedCallback
     /**
      * The actual callback
      *
-     * @var callable
+     * @var callable $callback
      */
     private $callback;
 
     /**
      * The reflection about the callback
      *
-     * @var ReflectionFunction
+     * @var ReflectionFunction $reflection
      */
     private $reflection;
 
@@ -40,7 +40,7 @@ class EnhancedCallback
     /**
      * Run the callback
      *
-     * @param bool|\GivenPHP\TestSuite $context
+     * @param bool|TestSuite $context
      * @param array                    $parameters
      *
      * @return mixed

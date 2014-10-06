@@ -1,11 +1,12 @@
 <?php
 
+use GivenPHP\Reporter\DefaultReporter;
+use GivenPHP\Reporter\IReporter;
 use GivenPHP\TestResult;
 use GivenPHP\TestSuite;
 
 require 'utils.php';
 
-// @todo Add a Formatter
 // @todo Handle PHP errors and exceptions
 
 /**
@@ -20,7 +21,7 @@ class GivenPHP
     const VERSION = '0.1.0';
 
     /**
-     * The defualt value for given, when and then statements
+     * The default value for given, when and then statements
      */
     const EMPTY_VALUE = 'GIVEN_PHP_EMPTY_VALUE';
 
@@ -42,7 +43,7 @@ class GivenPHP
     /**
      * The verbose labels of tests
      *
-     * @var array
+     * @var string[] $labels
      */
     private $labels = [];
 
@@ -54,25 +55,39 @@ class GivenPHP
     private $current_suite = null;
 
     /**
-     * The list of the errors of every tests
+     * The list of the errors of every test
      *
      * @var TestResult[] $errors
      */
     private $errors = [];
 
     /**
-     * The list of the results of every tests
+     * The list of the results of every test
      *
      * @var TestResult[] $results
      */
     private $results = [];
 
     /**
+     * The reporter used for output
+     *
+     * @var IReporter $reporter
+     */
+    private $reporter;
+
+    /**
+     * The started test, changed in start() method
+     *
+     * @var boolean $isStarted
+     */
+    private $isStarted = false;
+
+    /**
      * Constructor
      */
     private function __construct()
     {
-        echo 'GivenPHP v' . self::VERSION . PHP_EOL . PHP_EOL;
+        $this->setReporter(new DefaultReporter());
     }
 
     /**
@@ -81,26 +96,8 @@ class GivenPHP
      */
     public function __destruct()
     {
-        if (!empty($this->errors)) {
-            foreach ($this->errors AS $i => $error) {
-                $error->render($i + 1, $this->labels[$i]);
-            }
-
-            echo PHP_EOL . PHP_EOL . chr(27) . '[31m' . count($this->results) . ' examples, ' . count($this->errors) .
-                 ' failures';
-
-            echo PHP_EOL . PHP_EOL . chr(27) . '[0m' . 'Failed examples:';
-
-            foreach ($this->errors AS $error) {
-                $error->summary();
-            }
-
-            echo PHP_EOL;
-        } else {
-            echo PHP_EOL . PHP_EOL . chr(27) . '[32m' . count($this->results) . ' examples, 0 failures';
-        }
-
-        echo chr(27) . '[0m' . PHP_EOL;
+        $totalResults = count($this->results);
+        $this->reporter->reportEnd($totalResults, $this->errors, $this->labels, $this->results);
     }
 
     /**
@@ -111,10 +108,41 @@ class GivenPHP
     public static function get_instance()
     {
         if (static::$instance === null) {
-            static::$instance = new static;
+            static::$instance = new static();
         }
 
         return static::$instance;
+    }
+
+    /**
+     * Sets the state to started
+     *
+     * @throws Exception
+     */
+    public function start()
+    {
+        if ($this->isStarted) {
+            throw new Exception('The test is already started');
+        }
+
+        $this->isStarted = true;
+        $this->reporter->reportStart(self::VERSION);
+    }
+
+    /**
+     * Set the reporter to be used
+     *
+     * @param IReporter $reporter
+     *
+     * @throws Exception
+     */
+    public function setReporter(IReporter $reporter)
+    {
+        if ($this->isStarted) {
+            throw new Exception('Unable to change the reporter when the test is already started');
+        }
+
+        $this->reporter = $reporter;
     }
 
     /**
@@ -139,8 +167,8 @@ class GivenPHP
      * The context keyword
      * Isolates the tests ran in $callback
      *
-     * @param $description
-     * @param $callback
+     * @param string   $description
+     * @param callback $callback
      *
      * @return void
      */
@@ -159,10 +187,10 @@ class GivenPHP
      * The given keyword
      * Initialize a new value for the test
      *
-     * @param $name
-     * @param $value
-     * @param $is_parsed
-     * @param $label
+     * @param string  $name
+     * @param mixed   $value
+     * @param boolean $is_parsed
+     * @param string  $label
      *
      * @return void
      */
@@ -175,9 +203,9 @@ class GivenPHP
      * The when keyword
      * Add a callback to be run whenever a then is called
      *
-     * @param $name
-     * @param $callback
-     * @param $label
+     * @param string   $name
+     * @param callback $callback
+     * @param string   $label
      *
      * @return void
      */
@@ -192,8 +220,8 @@ class GivenPHP
      * All given values needed will be parsed, and will execute every actions given by when
      * Will store the result of the test for further use
      *
-     * @param $callback
-     * @param $label
+     * @param callback $callback
+     * @param string   $label
      *
      * @return void
      * @throws Exception
@@ -204,13 +232,15 @@ class GivenPHP
         $result              = $this->current_suite->run($callback);
         $this->current_suite = $saved;
 
+        $testNumber      = count($this->results);
+        $testDescription = $this->current_suite->description();
         $this->results[] = $result;
         if ($result->is_error()) {
             $this->errors[] = $result;
             $this->labels[] = $label;
-            echo chr(27) . '[31mF' . chr(27) . '[0m';
+            $this->reporter->reportFailure($testNumber, $testDescription);
         } else {
-            echo '.';
+            $this->reporter->reportSuccess($testNumber, $testDescription);
         }
     }
 }

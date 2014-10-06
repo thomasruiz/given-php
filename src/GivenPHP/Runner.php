@@ -40,6 +40,10 @@ class Runner
         $this->cli = new Command();
         $this->initialize_options();
         $this->initialize_coverage_analysis();
+
+        $reporter = $this->cli->getOption('reporter')->getValue();
+
+        GivenPHP::get_instance()->setReporter(new $reporter);
     }
 
     /**
@@ -70,6 +74,7 @@ class Runner
      */
     public function run()
     {
+        GivenPHP::get_instance()->start();
         $files = $this->cli->getArgumentValues();
 
         foreach ($files AS $file) {
@@ -132,9 +137,18 @@ class Runner
     private function initialize_options()
     {
         $this->cli->option('coverage-html')
-            ->describedAs('Generate a code coverage report in HTML.');
+                  ->describedAs('Generate a code coverage report in HTML.');
         $this->cli->option('coverage-clover')
-            ->describedAs('Generate a code coverage report in Clover XML.');
+                  ->describedAs('Generate a code coverage report in Clover XML.');
+        $this->cli->option('r')->aka('reporter')->defaultsTo('GivenPHP\Reporter\DefaultReporter')
+                  ->describedAs('Set the output reporter')
+                  ->must(function ($reporter) {
+                      $reporters = array('default', 'tap');
+                      return in_array(strtolower($reporter), $reporters);
+                  })
+                  ->map(function ($reporter) {
+                      return 'GivenPHP\\Reporter\\' . ucfirst(strtolower($reporter)) . 'Reporter';
+                  });
     }
 
     /**
@@ -145,7 +159,7 @@ class Runner
     private function has_coverage()
     {
         if (!is_bool($this->has_coverage)) {
-            $types = [ 'html', 'clover' ];
+            $types = ['html', 'clover'];
 
             $this->has_coverage = false;
 
