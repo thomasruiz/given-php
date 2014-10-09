@@ -4,7 +4,7 @@ describe('ErrorHandling', function() {
     context('Exceptions', function() {
         context('Basic exceptions', function() {
             when(function() {
-                    throw new Exception();
+                throw new Exception();
             });
 
             then(fails());
@@ -21,5 +21,13 @@ describe('ErrorHandling', function() {
             then(failsWith('ExtendedException'));
             then(failsWith('Exception'));
         });
+    });
+
+    context('Assertions', function () {
+        when(function () {
+            assert('2 < 1');
+        });
+
+        then(failsWith('GivenPHP\AssertionException'));
     });
 });
