@@ -16,5 +16,4 @@ Please follow the PSR-2 standard.
 
 ## TODO List
 
-* Error Handling (through `then(fails())` and `then(failsWith())`)
 * Output Handling (through `then(outputs())`)

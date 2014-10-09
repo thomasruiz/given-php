@@ -10,8 +10,6 @@ use GivenPHP\TestSuite;
 
 require 'utils.php';
 
-// @todo Handle PHP errors and exceptions
-
 /**
  * Class GivenPHP
  */
