@@ -39,6 +39,10 @@ class Error
      */
     public static function errorHandler($errno, $errstr, $errfile = null, $errline = null, $errcontext = [])
     {
+        if (($errno & (E_NOTICE | E_STRICT)) != 0) {
+            return ;
+        }
+
         throw new PHPErrorException($errno, $errstr, $errfile, $errline, $errcontext);
     }
 } 

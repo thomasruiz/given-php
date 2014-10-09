@@ -41,11 +41,11 @@ class EnhancedCallback
      * Run the callback
      *
      * @param bool|TestSuite $context
-     * @param array                    $parameters
+     * @param array          $parameters
      *
      * @return mixed
      */
-    public function __invoke($context = false, $parameters = [ ])
+    public function __invoke($context = false, $parameters = [])
     {
         $call_parameters = $context ? $this->parameters($context, false) : $parameters;
 
@@ -63,12 +63,12 @@ class EnhancedCallback
     public function parameters($context, $with_names = true)
     {
         $parameters      = $this->reflection->getParameters();
-        $call_parameters = [ ];
+        $call_parameters = [];
         foreach ($parameters as $i => $param) {
-            $call_parameters[$i] = & $context->get_value($param->getName());
+            $call_parameters[$i] = &$context->get_value($param->getName());
 
             if ($with_names) {
-                $call_parameters[$param->getName()] = & $call_parameters[$i];
+                $call_parameters[$param->getName()] = &$call_parameters[$i];
             }
         }
         return $call_parameters;
@@ -92,9 +92,19 @@ class EnhancedCallback
 
         $begin = strpos($code, 'function');
         $end   = strrpos($code, '}');
-        $code  = substr($code, $begin, $end - $begin);
+        $code  = trim(substr($code, $begin, $end - $begin));
 
-        return trim(str_replace('return', '', $code));
+        $codeLines = explode("\n", $code);
+
+        if (count($codeLines) == 1) {
+            return trim(str_replace('return', '', $codeLines[0]));
+        }
+
+        foreach ($codeLines as $i => $line) {
+            $codeLines[$i] = trim($line);
+        }
+
+        return trim(implode(' ', $codeLines));
     }
 
     /**

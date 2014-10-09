@@ -94,6 +94,7 @@ class GivenPHP
         assert_options(ASSERT_WARNING, 0);
         assert_options(ASSERT_QUIET_EVAL, 1);
         assert_options(ASSERT_CALLBACK, 'GivenPHP\Error::assertHandler');
+        error_reporting(E_ALL);
         set_error_handler('GivenPHP\Error::errorHandler');
     }
 
@@ -246,6 +247,9 @@ class GivenPHP
 
         try {
             $result = $this->current_suite->run($callback);
+            if ($this->current_suite->expectsFailure()) {
+                $result = new TestResult(false, $this->current_suite, new EnhancedCallback($callback));
+            }
         } catch (Exception $e) {
             $result     = $this->errorHandling($e, $callback);
             $errorFound = true;
@@ -257,7 +261,7 @@ class GivenPHP
         $testDescription = $this->current_suite->description();
         $this->results[] = $result;
 
-        if ($result->is_error() || $this->current_suite->expectsFailure() && $errorFound === false) {
+        if ($result->is_error()) {
             $this->errors[] = $result;
             $this->labels[] = $label;
             $this->reporter->reportFailure($testNumber, $testDescription);

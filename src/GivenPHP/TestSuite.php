@@ -216,11 +216,11 @@ class TestSuite
      * @return bool
      */
     public function expectsFailure($e = null) {
-        if ($e === null && $this->expectedFailure !== null) {
-            return true;
+        if ($this->expectedFailure === null) {
+            return false;
         }
 
-        return $this->expectedFailure === true || $e !== null && $e instanceof $this->expectedFailure;
+        return $e === null || $this->expectedFailure === true || $e instanceof $this->expectedFailure;
     }
 
     /**

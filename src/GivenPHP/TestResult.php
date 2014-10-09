@@ -107,7 +107,7 @@ class TestResult
             $labels = $this->context->labels();
             foreach ($labels as $i => $l) {
                 if (!$l->isEmpty()) {
-                    $completeLabel .= '       ' . $l . ' -> ' . $this->context->get_value($i) . PHP_EOL;
+                    $completeLabel .= '       ' . $l . ' -> ' . $this->format_value($this->context->get_value($i)) . PHP_EOL;
                 }
             }
             $completeLabel .= '       Then ' . $label . PHP_EOL;
