@@ -30,4 +30,13 @@ describe('ErrorHandling', function() {
 
         then(failsWith('GivenPHP\AssertionException'));
     });
+
+    context('PHP Errors', function() {
+        when(function() {
+            /** @noinspection PhpDivisionByZeroInspection */
+            return 2/0;
+        });
+
+        then(failsWith('GivenPHP\PHPErrorException'));
+    });
 });

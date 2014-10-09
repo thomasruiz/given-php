@@ -8,6 +8,7 @@ class Error
 {
     /**
      * Constructor
+     *
      * @param Exception $e
      */
     public function __construct(Exception $e = null)
@@ -22,7 +23,22 @@ class Error
      *
      * @throws AssertionException
      */
-    public static function assertHandler($file, $line, $code) {
+    public static function assertHandler($file, $line, $code)
+    {
         throw new AssertionException($file, $line, $code);
+    }
+
+    /**
+     * @param int    $errno
+     * @param string $errstr
+     * @param string $errfile
+     * @param int    $errline
+     * @param array  $errcontext
+     *
+     * @throws PHPErrorException
+     */
+    public static function errorHandler($errno, $errstr, $errfile = null, $errline = null, $errcontext = [])
+    {
+        throw new PHPErrorException($errno, $errstr, $errfile, $errline, $errcontext);
     }
 } 
