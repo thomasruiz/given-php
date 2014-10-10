@@ -57,6 +57,11 @@ class TestSuite
     private $parsed_data = [];
 
     /**
+     * @var null
+     */
+    private $expectedFailure = null;
+
+    /**
      * The last callback executed
      *
      * @var Callback $current_callback
@@ -199,6 +204,26 @@ class TestSuite
     }
 
     /**
+     * @param Exception|bool $e
+     */
+    public function addExpectedFailure($e = true) {
+        $this->expectedFailure = $e;
+    }
+
+    /**
+     * @param Exception $e
+     *
+     * @return bool
+     */
+    public function expectsFailure($e = null) {
+        if ($this->expectedFailure === null) {
+            return false;
+        }
+
+        return $e === null || $this->expectedFailure === true || $e instanceof $this->expectedFailure;
+    }
+
+    /**
      * Return the description of the current test
      *
      * @return string
@@ -228,5 +253,13 @@ class TestSuite
     public function labels()
     {
         return $this->labels;
+    }
+
+    /**
+     * @return callable
+     */
+    public function getLastCallback()
+    {
+        return $this->current_callback;
     }
 }

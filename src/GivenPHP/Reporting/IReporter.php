@@ -1,5 +1,5 @@
 <?php
-namespace GivenPHP\Reporter;
+namespace GivenPHP\Reporting;
 
 use GivenPHP\Label;
 use GivenPHP\TestResult;

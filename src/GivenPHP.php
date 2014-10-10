@@ -1,13 +1,14 @@
 <?php
 
-use GivenPHP\Reporter\DefaultReporter;
-use GivenPHP\Reporter\IReporter;
+use GivenPHP\EnhancedCallback;
+use GivenPHP\Error;
+use GivenPHP\Label;
+use GivenPHP\Reporting\DefaultReporter;
+use GivenPHP\Reporting\IReporter;
 use GivenPHP\TestResult;
 use GivenPHP\TestSuite;
 
 require 'utils.php';
-
-// @todo Handle PHP errors and exceptions
 
 /**
  * Class GivenPHP
@@ -43,7 +44,7 @@ class GivenPHP
     /**
      * The verbose labels of tests
      *
-     * @var string[] $labels
+     * @var Label[] $labels
      */
     private $labels = [];
 
@@ -88,6 +89,13 @@ class GivenPHP
     private function __construct()
     {
         $this->setReporter(new DefaultReporter());
+
+        assert_options(ASSERT_ACTIVE, 1);
+        assert_options(ASSERT_WARNING, 0);
+        assert_options(ASSERT_QUIET_EVAL, 1);
+        assert_options(ASSERT_CALLBACK, 'GivenPHP\Error::assertHandler');
+        error_reporting(E_ALL);
+        set_error_handler('GivenPHP\Error::errorHandler');
     }
 
     /**
@@ -228,13 +236,29 @@ class GivenPHP
      */
     public function then($callback, $label)
     {
-        $saved               = clone $this->current_suite;
-        $result              = $this->current_suite->run($callback);
+        $saved      = clone $this->current_suite;
+
+        if ($callback instanceof Error) {
+            $callback = function () use ($callback) {
+                return $callback;
+            };
+        }
+
+        try {
+            $result = $this->current_suite->run($callback);
+            if ($this->current_suite->expectsFailure()) {
+                $result = new TestResult(false, $this->current_suite, new EnhancedCallback($callback));
+            }
+        } catch (Exception $e) {
+            $result     = $this->errorHandling($e, $callback);
+        }
+
         $this->current_suite = $saved;
 
         $testNumber      = count($this->results);
         $testDescription = $this->current_suite->description();
         $this->results[] = $result;
+
         if ($result->is_error()) {
             $this->errors[] = $result;
             $this->labels[] = $label;
@@ -242,5 +266,35 @@ class GivenPHP
         } else {
             $this->reporter->reportSuccess($testNumber, $testDescription);
         }
+    }
+
+    /**
+     * @param Exception $e
+     * @param callable  $callback
+     *
+     * @return TestResult
+     */
+    private function errorHandling(Exception $e, $callback)
+    {
+        if ($this->current_suite->expectsFailure($e)) {
+            return new TestResult(true, $this->current_suite, new EnhancedCallback($callback));
+        }
+
+        return new TestResult(false, $this->current_suite, $this->current_suite->getLastCallback());
+    }
+
+    /**
+     * The fails and failsWith keywords
+     * These are used in case of expected failure from the tests
+     *
+     * @param Exception|bool $e
+     *
+     * @return Error
+     */
+    public function fails($e = true)
+    {
+        $this->current_suite->addExpectedFailure($e);
+
+        return new Error();
     }
 }
