@@ -242,3 +242,11 @@ fails();
 failsWith($exception);
 
 $exception {string} - name of exception class
+
+## Contributing
+
+Please follow the PSR-2 standard.
+
+## TODO List
+
+- [ ] Output Handling (through then(outputs()))
