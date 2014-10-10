@@ -78,7 +78,8 @@ if (!function_exists('then')) {
     /**
      * @see GivenPHP::then
      *
-     * @param $callback
+     * @param string $label
+     * @param string $callback
      *
      * @return void
      */

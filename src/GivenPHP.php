@@ -3,8 +3,8 @@
 use GivenPHP\EnhancedCallback;
 use GivenPHP\Error;
 use GivenPHP\Label;
-use GivenPHP\Reporter\DefaultReporter;
-use GivenPHP\Reporter\IReporter;
+use GivenPHP\Reporting\DefaultReporter;
+use GivenPHP\Reporting\IReporter;
 use GivenPHP\TestResult;
 use GivenPHP\TestSuite;
 
@@ -237,7 +237,6 @@ class GivenPHP
     public function then($callback, $label)
     {
         $saved      = clone $this->current_suite;
-        $errorFound = false;
 
         if ($callback instanceof Error) {
             $callback = function () use ($callback) {
@@ -252,7 +251,6 @@ class GivenPHP
             }
         } catch (Exception $e) {
             $result     = $this->errorHandling($e, $callback);
-            $errorFound = true;
         }
 
         $this->current_suite = $saved;
