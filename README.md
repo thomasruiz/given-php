@@ -1,15 +1,10 @@
 # GivenPHP
 
-**GivenPHP** is a test framework library that allows your Unit Tests to be defined cleanly.
-
-Please refer to the tests to get and idea how to use this.
-
-*Note: This is still in active development and is not even ready for alpha release.*
+**GivenPHP** is a test framework that allows your Unit Tests to be defined cleanly.
 
 ## Requirements
 
 * PHP 5.4.0 is required but using the latest version of PHP is highly recommended
-
 
 ## Installation
 
@@ -68,8 +63,123 @@ Getting help with the cli
 bin/givenphp --help
 ```
 
+### General test style of GivenPHP
+
+Defining tests with GivenPHP follows the following pattern:
+- `describe` addition
+- `scenario` simple addition of 2 values
+- `given` x = 1
+- `given` y = 2
+- `when` I add x and y
+- `then` I can expect the result to equal 3
+
+
+### Context description with `describe`
+
+Each logically grouping of tests should be placed inside a `describe` block. This allows you to provide some 
+descriptive context around what you are about to test. You can have multiple `describe` blocks in each test file and 
+you can nest `describe` blocks inside each other
+
+**example:**
+
+```php
+describe('A house on a hill', function () {
+  //write tests that test the properties of the house on the hill
+})
+```
+
+### Defining a `scenario`
+
+Each `describe` should have 1 or more `scenario` blocks that should be used to describe how the way the thing being
+tested behaves under different conditions. In a mathematics example, if we are using `describe` to test addition. We might have any number of different scenarios we want to test addition under. Perhaps the addition of 2 values, the addition of 3 values, etc.
+
+**example:**
+
+```php
+describe('addition', function () {
+  //...
+  scenario('addition of 2 values', function () {
+    //...
+  })
+  scenario('addition of 3 values', function () {
+    //...
+  })
+  //...
+})
+```
+
+### Variable declarations with `given`
+
+Setting up variables happens at the `given` stage of the `scenario`
+Call `given` passing it a string representing the name of the variable you want to assign as the first
+parameter and the value to assign as the second parameter. The variable you assign can be injected into `when` and `then` blocks in the callback.
+
+**example:**
+
+```php
+//$x and $y will be available for use in subsequent `when` and `then` blocks
+given('x', 1);
+given('y', 2);
+```
+You can optionally add a label to give some context to your variable definition
+
+**example:**
+
+```php
+given('a variable `x` is set to 1', 'x', 1);
+```
+
+### Operations on your variables with `when`
+
+After using `given` statements to setup variables you can then perform operations on them in a `when` block before making assertions about the result in a `then` block. Anything you have defined in a `given` block can be injected into a `when` block in by adding it as a parameter to the `when` callback.
+
+**example:**
+
+```php
+//we inject $x and $y into the callback function...
+when('adding x and y together', 'result', function ($x, $y) {
+  //and what we return here will be availble in later `given` blocks as $result
+  return $x + $y;
+});
+```
+
+### Assertions with `then`
+
+Assertions happen in the `then` block of the tests. In order to make an assertion you can either return true, false or make use of a third party assertion library such as [php-expect](https://github.com/wscoble/php-expect)
+
+**example:**
+
+```php
+then('I can expect the result to equal 3', function ($result) {
+  return $result === 3;
+});
+
+//or
+
+then('I can expect the result to equal 3', function ($result) {
+  Expect::a($result)->toBeEqualTo(3);
+});
+```
+
+### Catching errors with `fails` and `failsWith`
+
+If you are testing code the might error or throw an exception, you can use `fails` and `failsWith` to make 
+assertions about whats happening.
+
+**example:**
+
+```php
+when(function() {
+  throw new Exception;
+});
+then(fails());
+then(failsWith('Exception'));
+```
 
 ### Reporters
+
+You can control the output of your tests by setting the reporter. Currently a default dot matrix style reporter is
+available and a tap reporter can be set
 
 #### Default reporter
 
@@ -84,11 +194,51 @@ To specify test output to be in TAP format, use the -r or --reporter flag.
 bin/givenphp --reporter tap test
 ```
 
-### Test terms
+### API
+
 #### describe
-#### context
+
+describe($label, $callback);
+
+$label {string} - context description
+$callback {closure function}
+
+#### scenario
+
+scenario($label, $callback);
+
+$label {string} - context description
+$callback {closure function}
+
 #### given
+
+given([$label], $variableName, $callback);
+
+$label {string} - [optional] context description
+$variableName {string} - variable to assign
+$callback {closure function}
+
 #### when
+
+when([$label], [$variableName], $callback);
+
+$label {string} - [optional] context description
+$variableName {string} - [optional] variable to assign
+$callback {closure function}
+
 #### then
 
-## Further examples
+then([$label], $callback);
+
+$label {string} - [optional] context description
+$callback {closure function}
+
+#### fails
+
+fails();
+
+#### failsWith
+
+failsWith($exception);
+
+$exception {string} - name of exception class
