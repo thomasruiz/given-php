@@ -67,7 +67,7 @@ bin/givenphp --help
 
 Defining tests with GivenPHP follows the following pattern:
 - `describe` addition
-- `scenario` simple addition of 2 values
+- `context` simple addition of 2 values
 - `given` x = 1
 - `given` y = 2
 - `when` I add x and y
@@ -88,20 +88,20 @@ describe('A house on a hill', function () {
 })
 ```
 
-### Defining a `scenario`
+### Defining a `context`
 
-Each `describe` should have 1 or more `scenario` blocks that should be used to describe how the way the thing being
-tested behaves under different conditions. In a mathematics example, if we are using `describe` to test addition. We might have any number of different scenarios we want to test addition under. Perhaps the addition of 2 values, the addition of 3 values, etc.
+Each `describe` should have 1 or more `context` blocks that should be used to describe how the way the thing being
+tested behaves under different conditions. In a mathematics example, if we are using `describe` to test addition. We might have any number of different contexts we want to test addition under. Perhaps the addition of 2 values, the addition of 3 values, etc.
 
 **example:**
 
 ```php
 describe('addition', function () {
   //...
-  scenario('addition of 2 values', function () {
+  context('addition of 2 values', function () {
     //...
   })
-  scenario('addition of 3 values', function () {
+  context('addition of 3 values', function () {
     //...
   })
   //...
@@ -110,7 +110,7 @@ describe('addition', function () {
 
 ### Variable declarations with `given`
 
-Setting up variables happens at the `given` stage of the `scenario`
+Setting up variables happens at the `given` stage of the `context`
 Call `given` passing it a string representing the name of the variable you want to assign as the first
 parameter and the value to assign as the second parameter. The variable you assign can be injected into `when` and `then` blocks in the callback.
 
@@ -203,9 +203,9 @@ describe($label, $callback);
 $label {string} - context description
 $callback {closure function}
 
-#### scenario
+#### context
 
-scenario($label, $callback);
+context($label, $callback);
 
 $label {string} - context description
 $callback {closure function}
