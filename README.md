@@ -65,6 +65,10 @@ bin/givenphp --help
 
 ### General test style of GivenPHP
 
+GivenPHP loosely follows an [arrange, act, assert](http://www.arrangeactassert.com/why-and-what-is-arrange-act-assert/) style of structuring tests. 
+The `given` statement is the equivalent of `arrange`, `when` is synoymous with `act` and `then` is used in place of
+`assert`. This dsl helps to enforce the writing of clean, clear, well structured tests.
+
 Defining tests with GivenPHP follows the following pattern:
 - `describe` addition
 - `context` simple addition of 2 values
