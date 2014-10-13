@@ -82,9 +82,8 @@ Defining tests with GivenPHP follows the following pattern:
 
 ### Context description with `describe`
 
-Each logically grouping of tests should be placed inside a `describe` block. This allows you to provide some 
-descriptive context around what you are about to test. You can have multiple `describe` blocks in each test file and 
-you can nest `describe` blocks inside each other
+Each test file should define a single `describe` block. This allows you to provide some 
+descriptive context around what you are about to test. Note: you cannot nest `describe` blocks inside each other. 1 per file only.
 
 **example:**
 
@@ -96,8 +95,10 @@ describe('A house on a hill', function () {
 
 ### Defining a `context`
 
-Each `describe` should have 1 or more `context` blocks that should be used to describe how the way the thing being
-tested behaves under different conditions. In a mathematics example, if we are using `describe` to test addition. We might have any number of different contexts we want to test addition under. Perhaps the addition of 2 values, the addition of 3 values, etc.
+The files `describe` block should have 1 or more `context` blocks that should then be used to describe how the way the thing being
+tested behaves under different conditions. In a mathematics example, if we are using `describe` to test addition. We might have any number of different contexts we want to test addition under. Perhaps the addition of 2 values, the addition of 3 values, etc. 
+
+You may even nest `context` blocks within `context` blocks as you see fit.
 
 **example:**
 
@@ -106,12 +107,15 @@ describe('addition', function () {
   //...
   context('addition of 2 values', function () {
     //...
-  })
+  });
   context('addition of 3 values', function () {
     //...
-  })
+    context('...', function () {
+      //...
+    });
+  });
   //...
-})
+});
 ```
 
 ### Variable declarations with `given`
