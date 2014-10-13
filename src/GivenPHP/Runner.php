@@ -143,7 +143,7 @@ class Runner
         $this->cli->option('r')->aka('reporter')->defaultsTo('GivenPHP\Reporting\DefaultReporter')
                   ->describedAs('Set the output reporter')
                   ->must(function ($reporter) {
-                      $reporters = array('default', 'tap');
+                      $reporters = array('default', 'tap', 'list');
                       return in_array(strtolower($reporter), $reporters);
                   })
                   ->map(function ($reporter) {
