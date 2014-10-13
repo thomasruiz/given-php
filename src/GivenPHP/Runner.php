@@ -147,7 +147,7 @@ class Runner
                       return in_array(strtolower($reporter), $reporters);
                   })
                   ->map(function ($reporter) {
-                      return 'GivenPHP\\Reporting\\' . ucfirst(strtolower($reporter)) . 'Reporting';
+                      return 'GivenPHP\\Reporting\\' . ucfirst(strtolower($reporter)) . 'Reporter';
                   });
     }
 
