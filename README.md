@@ -148,7 +148,7 @@ After using `given` statements to setup variables you can then perform operation
 ```php
 //we inject $x and $y into the callback function...
 when('adding x and y together', 'result', function ($x, $y) {
-  //and what we return here will be availble in later `given` blocks as $result
+  //and what we return here will be availble in later `when` and `then` blocks as $result
   return $x + $y;
 });
 ```
