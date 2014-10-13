@@ -54,9 +54,9 @@ Example: running all tests in directory test
 bin/givenphp test
 ```
 
-Example: running a specific test called cat.php
+Example: running a specific test called test_cat.php
 ```
-bin/givenphp test/cat.php
+bin/givenphp test/test_cat.php
 ```
 
 Getting help with the cli
