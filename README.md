@@ -29,14 +29,16 @@ in `test_book.php`
 ```php
 describe('A Book', function () {
   context('turning a page', function () {
-    given('book', new Book);
-    given('page', 10);
+    given('book', new Book); 
+    when('setting the current page to 10', function($book) { 
+      $book->setPage(10); 
+    });
     when('turning the page', 'newPage', function ($book) {
       return $book->turnPage();
     });
-    then('$newPage should be 11', function ($newPage) {
+    then('the book should be on page 11', function ($newPage) {
       return $newPage === 11;
-    })
+    });
   })
 });
 ```
