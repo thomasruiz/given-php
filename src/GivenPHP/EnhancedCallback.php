@@ -4,23 +4,18 @@ namespace GivenPHP;
 use ReflectionFunction;
 use SplFileObject;
 
-/**
- * Class EnhancedCallback
- *
- * @package GivenPHP
- */
 class EnhancedCallback
 {
 
     /**
-     * The actual callback
+     * The actual encapsulated callback
      *
      * @var callable $callback
      */
     private $callback;
 
     /**
-     * The reflection about the callback
+     * The reflection function corresponding to the callback
      *
      * @var ReflectionFunction $reflection
      */
@@ -29,7 +24,7 @@ class EnhancedCallback
     /**
      * Constructor
      *
-     * @param callable $callback
+     * @param $callback
      */
     public function __construct($callback)
     {
@@ -38,10 +33,10 @@ class EnhancedCallback
     }
 
     /**
-     * Run the callback
+     * Invoke the callback with real parameters
      *
-     * @param bool|TestSuite $context
-     * @param array          $parameters
+     * @param bool|TestContext $context
+     * @param array            $parameters
      *
      * @return mixed
      */
@@ -53,10 +48,10 @@ class EnhancedCallback
     }
 
     /**
-     * Retrieve the parameters from the context according to their name in the callback function
+     * Retrieves the parameters of the callback
      *
-     * @param TestSuite $context
-     * @param bool      $with_names
+     * @param TestContext $context
+     * @param bool        $with_names
      *
      * @return array
      */
@@ -65,17 +60,18 @@ class EnhancedCallback
         $parameters      = $this->reflection->getParameters();
         $call_parameters = [];
         foreach ($parameters as $i => $param) {
-            $call_parameters[$i] = &$context->get_value($param->getName());
+            $call_parameters[$i] = &$context->getValue($param->getName());
 
             if ($with_names) {
                 $call_parameters[$param->getName()] = &$call_parameters[$i];
             }
         }
+
         return $call_parameters;
     }
 
     /**
-     * Retrieve the code of the callback
+     * Retrieve the code of the function
      *
      * @return string
      */

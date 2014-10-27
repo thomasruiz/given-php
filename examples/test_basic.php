@@ -66,16 +66,16 @@ describe('Natural failing assertions', function () {
         return $foo != 1;
     });
 
-    context('with labels', function() {
-        given('the number of offers', 'offers', 3);
-        given('the price of each offer', 'price', 4);
-
-        when('I multiply the number with the price', 'total', function($offers, $price) {
-            return $offers * $price;
-        });
-
-        then('I should get 15', function($total) {
-            return $total === 15;
-        });
-    });
+//    context('with labels', function() {
+//        given('the number of offers', 'offers', 3);
+//        given('the price of each offer', 'price', 4);
+//
+//        when('I multiply the number with the price', 'total', function($offers, $price) {
+//            return $offers * $price;
+//        });
+//
+//        then('I should get 15', function($total) {
+//            return $total === 15;
+//        });
+//    });
 });

@@ -1,36 +1,39 @@
 <?php
+
 namespace GivenPHP;
 
 use Commando\Command;
-use Exception;
-use GivenPHP;
-use PHP_CodeCoverage;
-use PHP_CodeCoverage_Exception;
-use PHP_CodeCoverage_Filter;
-use PHP_CodeCoverage_Report_Clover;
-use PHP_CodeCoverage_Report_HTML;
 
-/**
- * Class Runner
- *
- * @package GivenPHP
- */
 class Runner
 {
 
     /**
-     * The PHP_CodeCoverage instance
+     * The files that will be executed
      *
-     * @var PHP_CodeCoverage $coverage
+     * @var string[] $filesToExecute
      */
-    private $coverage = null;
+    private $filesToExecute = [];
 
     /**
-     * True if the code coverage is activated, false otherwise
+     * The files that have been executed
      *
-     * @var boolean $has_coverage
+     * @var string[] $filesExecuted
      */
-    private $has_coverage = null;
+    private $filesExecuted = [];
+
+    /**
+     * The files ignored by the runner
+     *
+     * @var string[] $ignoredFiles
+     */
+    private $ignoredFiles = [];
+
+    /**
+     * Set to true when the runner included all the files
+     *
+     * @var bool
+     */
+    private $done = false;
 
     /**
      * Constructor
@@ -38,91 +41,51 @@ class Runner
     public function __construct()
     {
         $this->cli = new Command();
-        $this->initialize_options();
-        $this->initialize_coverage_analysis();
-
-        $reporter = $this->cli->getOption('reporter')->getValue();
-
-        GivenPHP::get_instance()->setReporter(new $reporter);
+        $this->parseCommandLineArguments();
     }
 
     /**
-     * Destructor
-     *
-     * @throws Exception
-     * @return void
+     * Retrieve the files to be executed from the command line arguments
      */
-    public function __destruct()
+    private function parseCommandLineArguments()
     {
-        if ($this->has_coverage()) {
-            if (($path = $this->cli->getOption('coverage-html')->getValue())) {
-                $writer = new PHP_CodeCoverage_Report_HTML;
-                $writer->process($this->coverage, $path);
-            }
-
-            if (($path = $this->cli->getOption('coverage-clover')->getValue())) {
-                $writer = new PHP_CodeCoverage_Report_Clover;
-                $writer->process($this->coverage, $path);
-            }
-        }
-    }
-
-    /**
-     * Run a test file
-     *
-     * @return void
-     */
-    public function run()
-    {
-        GivenPHP::get_instance()->start();
         $files = $this->cli->getArgumentValues();
 
         foreach ($files AS $file) {
-            $this->recursive_run($file);
+            $this->addFileToExecute($file);
         }
     }
 
     /**
-     * Run all the tests in the file $file
-     * If $file is a directory, then run this function recursively on all the files in this directory
+     * Add a file to be executed
      *
      * @param string $file
-     *
-     * @throws PHP_CodeCoverage_Exception
-     * @return void
      */
-    private function recursive_run($file)
+    private function addFileToExecute($file)
     {
         if (is_dir($file)) {
-            $this->explore_directory($file);
-        } else if (strpos($file, 'test_') === strrpos($file, '/') + 1) {
-            if ($this->has_coverage()) {
-                $this->coverage->start($file);
-            }
-
-            include $file;
-
-            if ($this->has_coverage()) {
-                $this->coverage->stop();
-            }
+            $this->exploreDirectory($file);
+        } else if ($this->validateFileName($file)) {
+            $this->filesToExecute[] = $file;
+        } else {
+            $this->ignoredFiles[] = $file;
         }
     }
 
     /**
-     * Run recursive_run to all files in $directory
+     * Explore a directory and check for files to be included
      *
      * @param string $directory
-     *
-     * @return void
      */
-    private function explore_directory($directory)
+    private function exploreDirectory($directory)
     {
         if (($dir = opendir($directory))) {
             while (($file = readdir($dir)) !== false) {
                 if ($file === '.' || $file === '..') {
                     continue;
                 }
-                $this->recursive_run($directory . '/' . $file);
+
+                $this->addFileToExecute($directory . '/' . $file);
             }
         }
 
@@ -130,62 +93,58 @@ class Runner
     }
 
     /**
-     * Initialize the possible options of the CLI
-     *
-     * @return void
+     * Executes all the files contained in $filesToExecute
      */
-    private function initialize_options()
+    public function run()
     {
-        $this->cli->option('coverage-html')
-                  ->describedAs('Generate a code coverage report in HTML.');
-        $this->cli->option('coverage-clover')
-                  ->describedAs('Generate a code coverage report in Clover XML.');
-        $this->cli->option('r')->aka('reporter')->defaultsTo('GivenPHP\Reporting\DefaultReporter')
-                  ->describedAs('Set the output reporter')
-                  ->must(function ($reporter) {
-                      $reporters = array('default', 'tap');
-                      return in_array(strtolower($reporter), $reporters);
-                  })
-                  ->map(function ($reporter) {
-                      return 'GivenPHP\\Reporting\\' . ucfirst(strtolower($reporter)) . 'Reporting';
-                  });
+        foreach ($this->filesToExecute as $file) {
+            $this->runFile($file);
+        }
+
+        $this->done = true;
     }
 
     /**
-     * Return true if the code coverage is activated, false otherwise
+     * Execute a file
      *
-     * @return boolean
+     * @param string $file
      */
-    private function has_coverage()
+    private function runFile($file)
     {
-        if (!is_bool($this->has_coverage)) {
-            $types = ['html', 'clover'];
+        include $file;
 
-            $this->has_coverage = false;
-
-            foreach ($types AS $type) {
-                $this->has_coverage = $this->has_coverage || isset($this->cli->getFlagValues()['coverage-' . $type]);
-            }
-        }
-
-        return $this->has_coverage;
+        $this->filesExecuted[] = $file;
     }
 
     /**
-     * Initialize the code coverage analysis
+     * Check if the file needs to be executed
      *
-     * @return void
+     * @param string $file
+     *
+     * @return bool
      */
-    private function initialize_coverage_analysis()
+    private function validateFileName($file)
     {
-        if (!$this->has_coverage()) {
-            return;
-        }
+        return strpos($file, 'test_') === strrpos($file, '/') + 1;
+    }
 
-        $filter = new PHP_CodeCoverage_Filter();
-        $filter->addDirectoryToBlacklist('vendor');
-        $filter->addFileToBlacklist(__DIR__ . '/../utils.php');
+    /**
+     * Getter for $done
+     *
+     * @return bool
+     */
+    public function isDone()
+    {
+        return $this->done;
+    }
 
-        $this->coverage = new PHP_CodeCoverage(null, $filter);
+    /**
+     * Getter for $filesExecuted
+     *
+     * @return string[]
+     */
+    public function getFilesExecuted()
+    {
+        return $this->filesExecuted;
     }
 }
