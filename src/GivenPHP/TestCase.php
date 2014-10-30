@@ -34,6 +34,7 @@ class TestCase
         $suite->reset();
         $suite->executeActions();
         $result = $suite->executeCallback($this->callback);
+        $suite->tearDown();
 
         return new TestResult($result, $suite, $this);
     }

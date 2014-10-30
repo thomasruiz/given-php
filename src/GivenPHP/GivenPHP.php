@@ -153,8 +153,6 @@ class GivenPHP
             $this->hasError = true;
         }
 
-        $this->currentSuite->tearDown();
-
         return $result;
     }
 

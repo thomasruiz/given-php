@@ -69,7 +69,7 @@ class TestSuite
      */
     public function executeActions()
     {
-        return $this->currentContext->executeActions();
+        $this->currentContext->executeActions();
     }
 
     /**
