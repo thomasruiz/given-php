@@ -6,6 +6,13 @@ class TestSuite
 {
 
     /**
+     * The context used for the tests
+     *
+     * @var TestContext $currentContext
+     */
+    private $currentContext;
+
+    /**
      * Constructor
      *
      * @param string   $label
@@ -81,7 +88,7 @@ class TestSuite
     /**
      * @see TestContext::addAction
      *
-     * @param string $name
+     * @param string   $name
      * @param callable $callback
      *
      * @return mixed
@@ -101,5 +108,15 @@ class TestSuite
     public function executeCallback($action)
     {
         return $this->currentContext->executeCallback($action);
+    }
+
+    /**
+     * Getter for $currentContext
+     *
+     * @return TestContext
+     */
+    public function getCurrentContext()
+    {
+        return $this->currentContext;
     }
 }

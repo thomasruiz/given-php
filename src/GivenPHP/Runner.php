@@ -3,6 +3,7 @@
 namespace GivenPHP;
 
 use Commando\Command;
+use GivenPHP\Reporting\IReporter;
 
 class Runner
 {
@@ -36,12 +37,83 @@ class Runner
     private $done = false;
 
     /**
+     * Valid reporters for the -r option
+     *
+     * @var string[] $reporters
+     */
+    private $reporters = [
+        'default' => 'Default',
+        'null' => 'Null'
+    ];
+
+    /**
+     * The reporter chose in the command line
+     *
+     * @var IReporter $reporter
+     */
+    private $reporter;
+
+    /**
      * Constructor
      */
     public function __construct()
     {
         $this->cli = new Command();
+        $this->initializeCommandLineOptions();
         $this->parseCommandLineArguments();
+    }
+
+    /**
+     * Executes all the files contained in $filesToExecute
+     *
+     * @param bool $doRun
+     */
+    public function run($doRun = true)
+    {
+        if ($doRun) {
+            $this->reporter->runnerStarted($this);
+        }
+
+        foreach ($this->filesToExecute as $file) {
+            $this->runFile($file, $doRun);
+        }
+
+        if ($doRun) {
+            $this->reporter->runnerEnded($this);
+        }
+
+        $this->done = true;
+    }
+
+    /**
+     * Getter for $done
+     *
+     * @return bool
+     */
+    public function isDone()
+    {
+        return $this->done;
+    }
+
+    /**
+     * Getter for $filesExecuted
+     *
+     * @return string[]
+     */
+    public function getFilesExecuted()
+    {
+        return $this->filesExecuted;
+    }
+
+    /**
+     * Setter for $reporter
+     *
+     * @param IReporter $reporter
+     */
+    public function setReporter($reporter)
+    {
+        $this->reporter = $reporter;
+        GivenPHP::getInstance()->setReporter($this->reporter);
     }
 
     /**
@@ -54,6 +126,9 @@ class Runner
         foreach ($files AS $file) {
             $this->addFileToExecute($file);
         }
+
+        $reporter       = $this->cli->getOption('reporter')->getValue();
+        $this->setReporter(new $reporter);
     }
 
     /**
@@ -93,25 +168,16 @@ class Runner
     }
 
     /**
-     * Executes all the files contained in $filesToExecute
-     */
-    public function run()
-    {
-        foreach ($this->filesToExecute as $file) {
-            $this->runFile($file);
-        }
-
-        $this->done = true;
-    }
-
-    /**
      * Execute a file
      *
      * @param string $file
+     * @param bool   $doRun
      */
-    private function runFile($file)
+    private function runFile($file, $doRun)
     {
-        include $file;
+        if ($doRun) {
+            include $file;
+        }
 
         $this->filesExecuted[] = $file;
     }
@@ -129,22 +195,19 @@ class Runner
     }
 
     /**
-     * Getter for $done
-     *
-     * @return bool
+     * Initialize the command line options
      */
-    public function isDone()
+    private function initializeCommandLineOptions()
     {
-        return $this->done;
-    }
-
-    /**
-     * Getter for $filesExecuted
-     *
-     * @return string[]
-     */
-    public function getFilesExecuted()
-    {
-        return $this->filesExecuted;
+        $this->cli->option('r')
+                  ->aka('reporter')
+                  ->defaultsTo('GivenPHP\Reporting\DefaultReporter')
+                  ->describedAs('Set the output reporter')
+                  ->must(function ($reporter) {
+                      return isset($this->reporters[strtolower($reporter)]);
+                  })
+                  ->map(function ($reporter) {
+                      return "GivenPHP\\Reporting\\{$this->reporters[strtolower($reporter)]}Reporter";
+                  });
     }
 }

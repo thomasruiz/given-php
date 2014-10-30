@@ -2,25 +2,49 @@
 
 namespace GivenPHP;
 
+use GivenPHP\Reporting\IReporter;
+
 class GivenPHP
 {
+
+    const VERSION = '1.0.0';
 
     const EMPTY_VALUE = '__GIVEN_PHP_EV__';
 
     /**
+     * The instance for Singleton pattern
+     *
      * @var static $instance
      */
     private static $instance;
 
     /**
+     * The suite that is currently running
+     *
      * @var TestSuite $currentSuite
      */
     private $currentSuite;
 
     /**
+     * All results from all the tests
+     *
      * @var TestResult[] $testResults
      */
     private $testResults = [];
+
+    /**
+     * The reporter chose in the command line
+     *
+     * @var IReporter $reporter
+     */
+    private $reporter;
+
+    /**
+     * True if a test did not pass
+     *
+     * @var bool $hasError
+     */
+    private $hasError;
 
     /**
      * Constructor
@@ -56,7 +80,9 @@ class GivenPHP
     public function describe($label, $callback)
     {
         $this->currentSuite = new TestSuite($label, $callback);
+        $this->reporter->suiteStarted($this->currentSuite);
         $this->currentSuite->run();
+        $this->reporter->suiteEnded($this->currentSuite);
 
         return $this->currentSuite;
     }
@@ -117,10 +143,46 @@ class GivenPHP
      */
     public function then($callback)
     {
-        $testCase            = new TestCase($callback);
-        $result              = $testCase->run($this->currentSuite);
+        $testCase = new TestCase($callback);
+        $this->reporter->testStarted($testCase);
+        $result = $testCase->run($this->currentSuite);
+        $this->reporter->testEnded($result);
         $this->testResults[] = $result;
 
+        if ($result->isError()) {
+            $this->hasError = true;
+        }
+
         return $result;
+    }
+
+    /**
+     * Setter for $reporter
+     *
+     * @param IReporter $reporter
+     */
+    public function setReporter(IReporter $reporter)
+    {
+        $this->reporter = $reporter;
+    }
+
+    /**
+     * Getter for $testResults
+     *
+     * @return TestResult[]
+     */
+    public function getTestResults()
+    {
+        return $this->testResults;
+    }
+
+    /**
+     * Getter for $hasError
+     *
+     * @return boolean
+     */
+    public function hasError()
+    {
+        return $this->hasError;
     }
 }

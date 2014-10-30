@@ -10,7 +10,8 @@
         }
     ],
     "require": {
-        "nategood/commando": "*"
+        "nategood/commando": "*",
+        "symfony/console": "dev-master"
     },
     "require-dev": {
         "mockery/mockery": "dev-master",

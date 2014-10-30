@@ -37,4 +37,14 @@ class TestCase
 
         return new TestResult($result, $suite, $this);
     }
+
+    /**
+     * Getter for $callback
+     *
+     * @return callable
+     */
+    public function getCallback()
+    {
+        return $this->callback;
+    }
 }

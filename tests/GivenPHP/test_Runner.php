@@ -4,14 +4,14 @@ use GivenPHP\Runner;
 
 describe('Runner', function() {
     context('with no command line arguments', function() {
-        $_SERVER['argv'] = [];
+        $_SERVER['argv'] = [''];
 
         given('runner', function() {
-            return new Runner;
+            return new Runner();
         });
 
-        when(function($runner) {
-            $runner->run();
+        when(function(Runner $runner) {
+            $runner->run(false);
         });
 
         then(function($runner) {
