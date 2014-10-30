@@ -71,12 +71,26 @@ if (!function_exists('then')) {
     /**
      * @see GivenPHP::then
      *
-     * @param string $callback
+     * @param callable $callback
      *
      * @return void
      */
     function then($callback)
     {
         GivenPHP::getInstance()->then($callback);
+    }
+}
+
+if (!function_exists('tearDown')) {
+    /**
+     * @see GivenPHP::tearDown
+     *
+     * @param callable $callback
+     *
+     * @return void
+     */
+    function tearDown($callback)
+    {
+        GivenPHP::getInstance()->tearDown($callback);
     }
 }

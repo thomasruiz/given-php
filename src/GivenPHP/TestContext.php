@@ -48,6 +48,13 @@ class TestContext
     private $currentCallback;
 
     /**
+     * The actions to run after each test
+     *
+     * @var callable[] $tearDownActions
+     */
+    private $tearDownActions = [];
+
+    /**
      * Constructor.
      *
      * @param string   $label
@@ -113,20 +120,31 @@ class TestContext
         $this->uncompiledValues = $context->uncompiledValues;
         $this->actions          = $context->actions;
         $this->label            = $context->getLabel() . ' ' . $this->label;
+        $this->tearDownActions  = $context->tearDownActions;
     }
 
     /**
      * Execute all when() statements in context
      *
-     * @return bool
+     * @return void
      */
     public function executeActions()
     {
         foreach ($this->actions as $name => $action) {
             $this->compiledValues[$name] = $this->executeCallback($action);
         }
+    }
 
-        return true;
+    /**
+     * Execute all tearDown() callbacks
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        foreach ($this->tearDownActions as $action) {
+            $this->executeCallback($action);
+        }
     }
 
     /**
@@ -157,6 +175,18 @@ class TestContext
         }
 
         return $this->actions[$name] = $callback;
+    }
+
+    /**
+     * Add an action to be ran after each test
+     *
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    public function addTearDownAction($callback)
+    {
+        return $this->tearDownActions[] = $callback;
     }
 
     /**

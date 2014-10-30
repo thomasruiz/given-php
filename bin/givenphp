@@ -10,7 +10,7 @@ foreach ($files AS $file) {
     if (file_exists($file)) {
         require $file;
 
-        $runner = new GivenPHP\Runner;
+        $runner = new GivenPHP\Runner(\GivenPHP\GivenPHP::getInstance());
         $runner->run();
 
         exit(0);

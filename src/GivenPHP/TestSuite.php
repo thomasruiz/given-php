@@ -99,6 +99,18 @@ class TestSuite
     }
 
     /**
+     * @see TestContext::addTearDownAction
+     *
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    public function addTearDownAction($callback)
+    {
+        return $this->currentContext->addTearDownAction($callback);
+    }
+
+    /**
      * @see TestContext::executeCallable
      *
      * @param callable $action
@@ -108,6 +120,16 @@ class TestSuite
     public function executeCallback($action)
     {
         return $this->currentContext->executeCallback($action);
+    }
+
+    /**
+     * @see TestContext::tearDown
+     *
+     * @return void
+     */
+    public function tearDown()
+    {
+        $this->currentContext->tearDown();
     }
 
     /**

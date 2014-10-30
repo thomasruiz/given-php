@@ -134,7 +134,7 @@ class GivenPHP
 
     /**
      * The then() keyword
-     * Runs a specific callback that must use assertions or return a boolean, whether the test succeed or not
+     * Run a specific callback that must use assertions or return a boolean, whether the test succeed or not
      * It corresponds to the Assert part of the AAA pattern
      *
      * @param callable $callback
@@ -153,7 +153,22 @@ class GivenPHP
             $this->hasError = true;
         }
 
+        $this->currentSuite->tearDown();
+
         return $result;
+    }
+
+    /**
+     * The tearDown() keyword
+     * Add a callback to be run after each test in the context
+     *
+     * @param callable $callback
+     *
+     * @return void
+     */
+    public function tearDown($callback)
+    {
+        $this->currentSuite->addTearDownAction($callback);
     }
 
     /**

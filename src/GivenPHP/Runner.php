@@ -43,7 +43,7 @@ class Runner
      */
     private $reporters = [
         'default' => 'Default',
-        'null' => 'Null'
+        'null'    => 'Null'
     ];
 
     /**
@@ -54,11 +54,19 @@ class Runner
     private $reporter;
 
     /**
+     * The instance of GivenPHP
+     *
+     * @var GivenPHP $givenPHP
+     */
+    private $givenPHP;
+
+    /**
      * Constructor
      */
-    public function __construct()
+    public function __construct($givenPHP)
     {
-        $this->cli = new Command();
+        $this->givenPHP = $givenPHP;
+        $this->cli      = new Command();
         $this->initializeCommandLineOptions();
         $this->parseCommandLineArguments();
     }
@@ -106,6 +114,16 @@ class Runner
     }
 
     /**
+     * Getter for $reporter
+     *
+     * @return IReporter
+     */
+    public function getReporter()
+    {
+        return $this->reporter;
+    }
+
+    /**
      * Setter for $reporter
      *
      * @param IReporter $reporter
@@ -113,7 +131,7 @@ class Runner
     public function setReporter($reporter)
     {
         $this->reporter = $reporter;
-        GivenPHP::getInstance()->setReporter($this->reporter);
+        $this->givenPHP->setReporter($this->reporter);
     }
 
     /**
@@ -127,7 +145,7 @@ class Runner
             $this->addFileToExecute($file);
         }
 
-        $reporter       = $this->cli->getOption('reporter')->getValue();
+        $reporter = $this->cli->getOption('reporter')->getValue();
         $this->setReporter(new $reporter);
     }
 
