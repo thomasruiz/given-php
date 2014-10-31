@@ -2,6 +2,7 @@
 
 namespace GivenPHP;
 
+use GivenPHP\Expectation\Failure;
 use GivenPHP\Reporting\IReporter;
 
 class GivenPHP
@@ -180,6 +181,19 @@ class GivenPHP
     public function setUp($callback)
     {
         $this->currentSuite->addSetUpAction($callback);
+    }
+
+    /**
+     * The fails() keyword
+     * Specifies that a test is expected to fail
+     *
+     * @param string $expectedFailure
+     *
+     * @return Failure
+     */
+    public function fails($expectedFailure = null)
+    {
+        return new Failure($expectedFailure);
     }
 
     /**

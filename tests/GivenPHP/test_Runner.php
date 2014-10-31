@@ -9,10 +9,10 @@ describe('Runner', function () {
         m::close();
     });
 
+    given('givenphp', m::mock('GivenPHP')->shouldReceive('setReporter')->once()->getMock());
+
     context('with no command line arguments', function () {
         $_SERVER['argv'] = [''];
-
-        given('givenphp', m::mock('GivenPHP')->shouldReceive('setReporter')->once()->getMock());
 
         given('runner', function ($givenphp) {
             return new Runner($givenphp);
@@ -32,9 +32,7 @@ describe('Runner', function () {
     });
 
     context('with files', function () {
-        $_SERVER['argv'] = ['test_unexisting_file', 'tests/test_simple.php', 'test_unexisting_file2'];
-
-        given('givenphp', m::mock('GivenPHP')->shouldReceive('setReporter')->once()->getMock());
+        $_SERVER['argv'] = ['test_unexisting_file', 'tests/GivenPHP/stubs/test_simple.php', 'test_unexisting_file2'];
 
         given('runner', function ($givenphp) {
             return new Runner($givenphp);
@@ -56,8 +54,6 @@ describe('Runner', function () {
     context('valid options', function () {
         context('reporting', function () {
             $_SERVER['argv'] = ['tests/test_simple.php', '-r', 'null'];
-
-            given('givenphp', m::mock('GivenPHP')->shouldReceive('setReporter')->once()->getMock());
 
             given('runner', function ($givenphp) {
                 return new Runner($givenphp);

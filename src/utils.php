@@ -71,7 +71,7 @@ if (!function_exists('then')) {
     /**
      * @see GivenPHP::then
      *
-     * @param callable $callback
+     * @param callable|\GivenPHP\Expectation\Expectation $callback
      *
      * @return void
      */
@@ -106,5 +106,33 @@ if (!function_exists('setUp')) {
     function setUp($callback)
     {
         GivenPHP::getInstance()->setUp($callback);
+    }
+}
+
+if (!function_exists('fails')) {
+    /**
+     * @see GivenPHP::fails
+     *
+     * @param string $expectedError
+     *
+     * @return \GivenPHP\Expectation\Failure
+     */
+    function fails($expectedError = null)
+    {
+        return GivenPHP::getInstance()->fails($expectedError);
+    }
+}
+
+if (!function_exists('failsWith')) {
+    /**
+     * @see GivenPHP::fails
+     *
+     * @param string $expectedError
+     *
+     * @return \GivenPHP\Expectation\Failure
+     */
+    function failsWith($expectedError)
+    {
+        return fails($expectedError);
     }
 }

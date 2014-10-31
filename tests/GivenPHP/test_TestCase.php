@@ -14,10 +14,14 @@ describe('TestCase', function () {
 
     given('suite', function ($test) {
         $mock = m::mock('GivenPHP\TestSuite');
-        $mock->shouldReceive('reset')->once();
-        $mock->shouldReceive('executeActions')->once();
+
+        $mock->shouldReceive('getCurrentContext->getCurrentCallback')->once()->andReturn('TestSuite mock');
+        $mock->shouldReceive('getCurrentContext->getLabel')->once()->andReturn(null);
+        $mock->shouldReceive('reset')->once()->withNoArgs();
+        $mock->shouldReceive('executeActions')->once()->withNoArgs();
         $mock->shouldReceive('executeCallback')->once()->with($test)->andReturn($test);
-        $mock->shouldReceive('tearDown')->once();
+        $mock->shouldReceive('setUp')->once()->withNoArgs();
+        $mock->shouldReceive('tearDown')->once()->withNoArgs();
 
         return $mock;
     });

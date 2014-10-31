@@ -144,7 +144,10 @@ class DefaultReporter implements IReporter
     }
 
     /**
+     * Generates the summary
+     *
      * @param TestResult[] $testResults
+     * @param bool         $hasError
      *
      * @return string
      */
@@ -189,15 +192,83 @@ class DefaultReporter implements IReporter
      * Write a failed test
      *
      * @param TestResult $result
+     * @param int        $failedTestNumber
      *
      * @return void
      */
     private function writeFailedTest($result, $failedTestNumber)
     {
+        if ($result->getTestCase()->isExpectation()) {
+            $this->writeExpectationTest($result, $failedTestNumber);
+        } elseif ($result->getResult() instanceof \Exception) {
+            $this->writeExceptionTest($result, $failedTestNumber);
+        } else {
+            $this->writeNonExpectationTest($result, $failedTestNumber);
+        }
+    }
+
+    /**
+     * Write a test that is an Expectation
+     *
+     * @param TestResult $result
+     * @param int        $failedTestNumber
+     *
+     * @return void
+     */
+    private function writeExpectationTest($result, $failedTestNumber)
+    {
+        $expectation = $result->getTestCase()->getCallback();
+
+        $message = $this->formatTestLabel($result, $failedTestNumber);
+        $message .= $this->indent . 'Then { expects ' . $expectation->expectsMessage() . ' }';
+        $this->output->writeln($message);
+    }
+
+    /**
+     * @param TestResult $result
+     * @param int        $failedTestNumber
+     */
+    private function writeExceptionTest($result, $failedTestNumber)
+    {
+        /** @var \Exception $exception */
+        $exception = $result->getResult();
+        $fct       = new EnhancedCallback($result->getTestCase()->getCallback());
+        $errorFct  = $result->getTestCase()->getLastExecutedCallback();
+
+        $message = $this->formatTestLabel($result, $failedTestNumber);
+        $message .= $this->indent . 'Then { ' . $fct->code() . ' }' . PHP_EOL;
+        $message .=
+            $this->indent . $this->indent . 'Failure/Error: { ' . $errorFct->code() .
+            ' }' . PHP_EOL;
+        $message .= $this->indent . $this->indent . $exception->getMessage();
+        $this->output->writeln($message);
+    }
+
+    /**
+     * Write a test that has a callback
+     *
+     * @param TestResult $result
+     * @param int        $failedTestNumber
+     *
+     * @return void
+     */
+    private function writeNonExpectationTest($result, $failedTestNumber)
+    {
         $fct = new EnhancedCallback($result->getTestCase()->getCallback());
 
-        $message = $this->indent . $failedTestNumber . ') ' . $result->getSuite()->getCurrentContext()->getLabel();
+        $message = $this->formatTestLabel($result, $failedTestNumber);
         $message .= $this->indent . 'Then { ' . $fct->code() . ' }';
         $this->output->writeln($message);
+    }
+
+    /**
+     * @param TestResult $result
+     * @param int        $failedTestNumber
+     *
+     * @return string
+     */
+    private function formatTestLabel($result, $failedTestNumber)
+    {
+        return $this->indent . $failedTestNumber . ') ' . $result->getTestCase()->getLabel();
     }
 }

@@ -8,7 +8,7 @@ class TestResult
     /**
      * The result of the test case, whether it succeeded or not
      *
-     * @var boolean $result
+     * @var boolean|object $result
      */
     private $result;
 
@@ -47,7 +47,7 @@ class TestResult
      */
     public function isError()
     {
-        return !$this->result;
+        return $this->result !== true;
     }
 
     /**
@@ -68,5 +68,15 @@ class TestResult
     public function getTestCase()
     {
         return $this->testCase;
+    }
+
+    /**
+     * Getter for $result
+     *
+     * @return boolean|object
+     */
+    public function getResult()
+    {
+        return $this->result;
     }
 }

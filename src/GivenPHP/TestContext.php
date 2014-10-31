@@ -240,6 +240,16 @@ class TestContext
     }
 
     /**
+     * Getter for $currentCallback
+     *
+     * @return EnhancedCallback
+     */
+    public function getCurrentCallback()
+    {
+        return $this->currentCallback;
+    }
+
+    /**
      * Compile the given value
      *
      * @param mixed $value

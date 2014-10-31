@@ -13,14 +13,23 @@ class TestSuite
     private $currentContext;
 
     /**
+     * The class used for TestContext
+     *
+     * @var string $contextClass
+     */
+    private $contextClass;
+
+    /**
      * Constructor
      *
      * @param string   $label
      * @param callable $callback
+     * @param string   $contextClass
      */
-    public function __construct($label, $callback)
+    public function __construct($label, $callback, $contextClass = 'GivenPHP\TestContext')
     {
-        $this->currentContext = new TestContext($label, $callback);
+        $this->contextClass   = $contextClass;
+        $this->currentContext = is_string($contextClass) ? new $contextClass($label, $callback) : $contextClass;
     }
 
     /**
@@ -35,7 +44,8 @@ class TestSuite
     {
         $savedContext = $this->currentContext;
 
-        $this->currentContext = new TestContext($label, $callback);
+        $this->currentContext =
+            is_string($this->contextClass) ? new $this->contextClass($label, $callback) : $this->contextClass;
         $this->currentContext->addParentContext($savedContext);
 
         $rc = $this->currentContext->run($this);
