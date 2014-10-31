@@ -62,15 +62,24 @@ class TestContext
     private $setUpActions = [];
 
     /**
+     * Dependancy Injection of the EnhancedCallback class
+     *
+     * @var object|string $enhancedCallbackClass
+     */
+    private $enhancedCallbackClass;
+
+    /**
      * Constructor.
      *
-     * @param string   $label
-     * @param callable $callback
+     * @param string        $label
+     * @param callable      $callback
+     * @param string|object $enhancedCallbackClass
      */
-    public function __construct($label, $callback)
+    public function __construct($label, $callback, $enhancedCallbackClass = 'GivenPHP\EnhancedCallback')
     {
-        $this->label    = $label;
-        $this->callback = $callback;
+        $this->label                 = $label;
+        $this->callback              = $callback;
+        $this->enhancedCallbackClass = $enhancedCallbackClass;
     }
 
     /**
@@ -110,10 +119,12 @@ class TestContext
      */
     public function executeCallback($callback)
     {
-        $cb                    = new EnhancedCallback($callback);
+        $cb = is_string($this->enhancedCallbackClass) ? new $this->enhancedCallbackClass($callback) :
+            $this->enhancedCallbackClass;
+
         $this->currentCallback = $cb;
 
-        return $cb($this);
+        return $cb->__invoke($this); // cannot call directly $cb($this) for testing purpose: unable to mock it
     }
 
     /**
@@ -178,6 +189,22 @@ class TestContext
     public function addUncompiledValue($name, $value)
     {
         return $this->uncompiledValues[$name] = $value;
+    }
+
+    /**
+     * Retrieve an uncompiled value
+     *
+     * @param string $name
+     *
+     * @return mixed
+     */
+    public function getUncompiledValue($name)
+    {
+        if (!isset($this->uncompiledValues[$name])) {
+            throw new \UnexpectedValueException("The uncompiled value $name does not exist.");
+        }
+
+        return $this->uncompiledValues[$name];
     }
 
     /**
