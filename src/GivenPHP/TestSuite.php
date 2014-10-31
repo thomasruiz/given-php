@@ -111,6 +111,18 @@ class TestSuite
     }
 
     /**
+     * @see TestContext::addSetUpAction
+     *
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    public function addSetUpAction($callback)
+    {
+        return $this->currentContext->addSetUpAction($callback);
+    }
+
+    /**
      * @see TestContext::executeCallable
      *
      * @param callable $action
@@ -130,6 +142,16 @@ class TestSuite
     public function tearDown()
     {
         $this->currentContext->tearDown();
+    }
+
+    /**
+     * @see TestContext::setUp
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        $this->currentContext->setUp();
     }
 
     /**

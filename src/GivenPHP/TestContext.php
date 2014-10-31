@@ -55,6 +55,13 @@ class TestContext
     private $tearDownActions = [];
 
     /**
+     * The actions to run before each test
+     *
+     * @var callable[] $setUpActions
+     */
+    private $setUpActions = [];
+
+    /**
      * Constructor.
      *
      * @param string   $label
@@ -121,6 +128,7 @@ class TestContext
         $this->actions          = $context->actions;
         $this->label            = $context->getLabel() . ' ' . $this->label;
         $this->tearDownActions  = $context->tearDownActions;
+        $this->setUpActions     = $context->setUpActions;
     }
 
     /**
@@ -143,6 +151,18 @@ class TestContext
     public function tearDown()
     {
         foreach ($this->tearDownActions as $action) {
+            $this->executeCallback($action);
+        }
+    }
+
+    /**
+     * Execute all setUp() callbacks
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        foreach ($this->setUpActions as $action) {
             $this->executeCallback($action);
         }
     }
@@ -187,6 +207,18 @@ class TestContext
     public function addTearDownAction($callback)
     {
         return $this->tearDownActions[] = $callback;
+    }
+
+    /**
+     * Add an action to be ran before each test
+     *
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    public function addSetUpAction($callback)
+    {
+        return $this->setUpActions[] = $callback;
     }
 
     /**

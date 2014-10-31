@@ -32,6 +32,7 @@ class TestCase
     public function run(TestSuite $suite)
     {
         $suite->reset();
+        $suite->setUp();
         $suite->executeActions();
         $result = $suite->executeCallback($this->callback);
         $suite->tearDown();

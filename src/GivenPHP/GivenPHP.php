@@ -170,6 +170,19 @@ class GivenPHP
     }
 
     /**
+     * The setUp() keyword
+     * Add a callback to be run before each test in the context
+     *
+     * @param callable $callback
+     *
+     * @return void
+     */
+    public function setUp($callback)
+    {
+        $this->currentSuite->addSetUpAction($callback);
+    }
+
+    /**
      * Setter for $reporter
      *
      * @param IReporter $reporter

@@ -94,3 +94,17 @@ if (!function_exists('tearDown')) {
         GivenPHP::getInstance()->tearDown($callback);
     }
 }
+
+if (!function_exists('setUp')) {
+    /**
+     * @see GivenPHP::setUp
+     *
+     * @param callable $callback
+     *
+     * @return void
+     */
+    function setUp($callback)
+    {
+        GivenPHP::getInstance()->setUp($callback);
+    }
+}
