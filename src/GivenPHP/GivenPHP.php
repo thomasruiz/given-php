@@ -48,6 +48,13 @@ class GivenPHP
     private $hasError;
 
     /**
+     * True if a test is running
+     *
+     * @var bool $runningTest
+     */
+    private $runningTest;
+
+    /**
      * Constructor
      */
     private function __construct()
@@ -144,10 +151,12 @@ class GivenPHP
      */
     public function then($callback)
     {
+        $this->prepareForTestRun();
         $testCase = new TestCase($callback);
         $this->reporter->testStarted($testCase);
         $result = $testCase->run($this->currentSuite);
         $this->reporter->testEnded($result);
+        $this->closeTestRun();
         $this->testResults[] = $result;
 
         if ($result->isError()) {
@@ -224,5 +233,25 @@ class GivenPHP
     public function hasError()
     {
         return $this->hasError;
+    }
+
+    /**
+     * Called before running a test case
+     */
+    private function prepareForTestRun()
+    {
+        if ($this->runningTest) {
+            throw new \BadFunctionCallException('Then() is not allowed in given() or when() statements');
+        }
+        
+        $this->runningTest = true;
+    }
+
+    /**
+     * Called when a test case is finished
+     */
+    private function closeTestRun()
+    {
+        $this->runningTest = false;
     }
 }
