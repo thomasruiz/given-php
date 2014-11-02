@@ -87,4 +87,46 @@ describe('TestContext', function () {
             return $context->getValue('bar') === 'bar';
         });
     });
+
+    context('with a parent', function () {
+        given('parentContext', function ($enhancedCallback) {
+            $context = new TestContext('parent context', function () { return '1234'; }, $enhancedCallback);
+
+            $context->addUncompiledValue('foo', 'foo');
+            $context->addUncompiledValue('bar', 'bar');
+            $context->addAction('simpleAction', null);
+            $context->addSetUpAction(null);
+            $context->addTearDownAction(null);
+
+            return $context;
+        });
+
+        when(function (TestContext $context, $parentContext) {
+            $context->addParentContext($parentContext);
+        });
+
+        then(function (TestContext $context) {
+            return $context->getLabel() === 'parent context simple context';
+        });
+
+        then(function (TestContext $context) {
+            return $context->getUncompiledValue('foo') === 'foo';
+        });
+
+        then(function (TestContext $context) {
+            return $context->getValue('bar') === 'bar';
+        });
+
+        then(function (TestContext $context) {
+            return count($context->getActions()) === 1;
+        });
+
+        then(function (TestContext $context) {
+            return count($context->getTearDownActions()) === 1;
+        });
+
+        then(function (TestContext $context) {
+            return count($context->getSetUpActions()) === 1;
+        });
+    });
 });

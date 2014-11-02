@@ -277,6 +277,36 @@ class TestContext
     }
 
     /**
+     * Getter for $actions
+     *
+     * @return array
+     */
+    public function getActions()
+    {
+        return $this->actions;
+    }
+
+    /**
+     * Getter for $tearDownActions
+     *
+     * @return \callable[]
+     */
+    public function getTearDownActions()
+    {
+        return $this->tearDownActions;
+    }
+
+    /**
+     * Getter for $setUpActions
+     *
+     * @return \callable[]
+     */
+    public function getSetUpActions()
+    {
+        return $this->setUpActions;
+    }
+
+    /**
      * Compile the given value
      *
      * @param mixed $value
