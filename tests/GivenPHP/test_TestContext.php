@@ -129,4 +129,77 @@ describe('TestContext', function () {
             return count($context->getSetUpActions()) === 1;
         });
     });
+
+    context('actions', function () {
+        given('executed', false);
+
+        given('enhancedCallback', function (&$executed) {
+            $enhancedCallback = m::mock('EnhancedCallback');
+            $enhancedCallback->shouldReceive('__invoke')->with(m::on(function () use (&$executed) {
+                $executed = true;
+
+                return true;
+            }))->andReturn(true);
+
+            return $enhancedCallback;
+        });
+
+        context('tearDown', function () {
+            when(function (TestContext $context) {
+                $context->addTearDownAction(null);
+            });
+
+            when(function (TestContext $context) {
+                $context->tearDown();
+            });
+
+            then(function (TestContext $context) {
+                return count($context->getTearDownActions()) === 1;
+            });
+
+            then(function ($executed) {
+                return $executed === true;
+            });
+        });
+
+        context('setUp', function () {
+            when(function (TestContext $context) {
+                $context->addSetUpAction(null);
+            });
+
+            when(function (TestContext $context) {
+                $context->setUp();
+            });
+
+            then(function (TestContext $context) {
+                return count($context->getSetUpActions()) === 1;
+            });
+
+            then(function ($executed) {
+                return $executed === true;
+            });
+        });
+
+        context('normal', function () {
+            when(function (TestContext $context) {
+                $context->addAction('normal', null);
+            });
+
+            when(function (TestContext $context) {
+                $context->executeActions();
+            });
+
+            then(function (TestContext $context) {
+                return count($context->getActions()) === 1;
+            });
+
+            then(function ($executed) {
+                return $executed === true;
+            });
+
+            then(function (TestContext $context) {
+                return $context->getValue('normal') === true;
+            });
+        });
+    });
 });
