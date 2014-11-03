@@ -58,7 +58,7 @@ class TestCase
         }
 
         $this->lastExecutedCallback = $suite->getCurrentContext()->getCurrentCallback();
-        $result = $this->checkExpectation($result);
+        $result                     = $this->checkExpectation($result);
 
         return new TestResult($result, $suite, $this);
     }
@@ -108,14 +108,24 @@ class TestCase
      *
      * @param $suite
      *
+     * @throws \Exception
      * @return bool|null
      */
     private function runTest($suite)
     {
         $suite->setUp();
-        $suite->executeActions();
 
-        $result = !$this->callback instanceof Expectation ? $suite->executeCallback($this->callback) : null;
+        try {
+            $suite->executeActions();
+            $result = !$this->callback instanceof Expectation ? $suite->executeCallback($this->callback) : null;
+        } catch (\Exception $e) {
+            try {
+                $suite->tearDown();
+            } catch (\Exception $f) {
+            }
+
+            throw $e;
+        }
 
         $suite->tearDown();
 
