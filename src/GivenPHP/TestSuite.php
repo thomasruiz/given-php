@@ -13,7 +13,7 @@ class TestSuite
     private $currentContext;
 
     /**
-     * Dependancy Injection of the TestContext class
+     * Dependency Injection of the TestContext class
      *
      * @var string $contextClass
      */

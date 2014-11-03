@@ -62,6 +62,8 @@ class Runner
 
     /**
      * Constructor
+     *
+     * @param GivenPHP $givenPHP
      */
     public function __construct($givenPHP)
     {

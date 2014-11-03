@@ -62,7 +62,7 @@ class TestContext
     private $setUpActions = [];
 
     /**
-     * Dependancy Injection of the EnhancedCallback class
+     * Dependency Injection of the EnhancedCallback class
      *
      * @var object|string $enhancedCallbackClass
      */

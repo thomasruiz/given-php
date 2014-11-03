@@ -9,7 +9,9 @@ describe('Runner', function () {
         m::close();
     });
 
-    given('givenphp', m::mock('GivenPHP')->shouldReceive('setReporter')->once()->getMock());
+    given('givenphp', function () {
+        return m::mock('GivenPHP')->shouldReceive('setReporter')->once()->getMock();
+    });
 
     context('with no command line arguments', function () {
         $_SERVER['argv'] = [''];

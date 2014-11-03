@@ -4,6 +4,7 @@ namespace GivenPHP;
 
 use GivenPHP\Expectation\Failure;
 use GivenPHP\Reporting\IReporter;
+use GivenPHP\Reporting\NullReporter;
 
 class GivenPHP
 {
@@ -55,10 +56,40 @@ class GivenPHP
     private $runningTest;
 
     /**
-     * Constructor
+     * Dependency Injection of the TestSuite class
+     *
+     * @var string|TestSuite
      */
-    private function __construct()
+    private $testSuiteClass;
+
+    /**
+     * Dependency Injection of the TestCase class
+     *
+     * @var string|TestCase
+     */
+    private $testCaseClass;
+
+    /**
+     * Dependency Injection of the Failure class
+     *
+     * @var string|Failure
+     */
+    private $failureClass;
+
+    /**
+     * Constructor
+     *
+     * @param string|TestSuite $testSuiteClass
+     * @param string|TestCase  $testCaseClass
+     * @param string|Failure   $failureClass
+     */
+    public function __construct($testSuiteClass = 'GivenPHP\TestSuite', $testCaseClass = 'GivenPHP\TestCase',
+                                $failureClass = 'GivenPHP\Expectation\Failure')
     {
+        $this->testSuiteClass = $testSuiteClass;
+        $this->testCaseClass  = $testCaseClass;
+        $this->failureClass   = $failureClass;
+        $this->reporter       = new NullReporter();
     }
 
     /**
@@ -87,7 +118,8 @@ class GivenPHP
      */
     public function describe($label, $callback)
     {
-        $this->currentSuite = new TestSuite($label, $callback);
+        $this->currentSuite =
+            is_string($this->testSuiteClass) ? new $this->testSuiteClass($label, $callback) : $this->testSuiteClass;
         $this->reporter->suiteStarted($this->currentSuite);
         $this->currentSuite->run();
         $this->reporter->suiteEnded($this->currentSuite);
@@ -107,6 +139,10 @@ class GivenPHP
      */
     public function context($label, $callback)
     {
+        if (!$this->currentSuite) {
+            $this->statementNotInDescribe('context');
+        }
+
         return $this->currentSuite->isolateContext($label, $callback);
     }
 
@@ -122,6 +158,10 @@ class GivenPHP
      */
     public function given($name, $value)
     {
+        if (!$this->currentSuite) {
+            $this->statementNotInDescribe('given');
+        }
+
         return $this->currentSuite->addUncompiledValue($name, $value);
     }
 
@@ -137,6 +177,10 @@ class GivenPHP
      */
     public function when($name, $callback)
     {
+        if (!$this->currentSuite) {
+            $this->statementNotInDescribe('when');
+        }
+
         return $this->currentSuite->addAction($name, $callback);
     }
 
@@ -151,8 +195,12 @@ class GivenPHP
      */
     public function then($callback)
     {
+        if (!$this->currentSuite) {
+            $this->statementNotInDescribe('then');
+        }
+
         $this->prepareForTestRun();
-        $testCase = new TestCase($callback);
+        $testCase = is_string($this->testCaseClass) ? new $this->testCaseClass($callback) : $this->testCaseClass;
         $this->reporter->testStarted($testCase);
         $result = $testCase->run($this->currentSuite);
         $this->reporter->testEnded($result);
@@ -176,6 +224,10 @@ class GivenPHP
      */
     public function tearDown($callback)
     {
+        if (!$this->currentSuite) {
+            $this->statementNotInDescribe('tearDown');
+        }
+
         $this->currentSuite->addTearDownAction($callback);
     }
 
@@ -189,6 +241,10 @@ class GivenPHP
      */
     public function setUp($callback)
     {
+        if (!$this->currentSuite) {
+            $this->statementNotInDescribe('setUp');
+        }
+
         $this->currentSuite->addSetUpAction($callback);
     }
 
@@ -202,7 +258,11 @@ class GivenPHP
      */
     public function fails($expectedFailure = null)
     {
-        return new Failure($expectedFailure);
+        if (!$this->currentSuite) {
+            $this->statementNotInDescribe('fails');
+        }
+
+        return is_string($this->failureClass) ? new $this->failureClass($expectedFailure) : $this->failureClass;
     }
 
     /**
@@ -236,6 +296,16 @@ class GivenPHP
     }
 
     /**
+     * Describe must be the first keyword to initialize suites
+     *
+     * @param string $keyword
+     */
+    private function statementNotInDescribe($keyword)
+    {
+        throw new \BadFunctionCallException("$keyword must be within a describe statement");
+    }
+
+    /**
      * Called before running a test case
      */
     private function prepareForTestRun()
@@ -243,7 +313,7 @@ class GivenPHP
         if ($this->runningTest) {
             throw new \BadFunctionCallException('Then() is not allowed in given() or when() statements');
         }
-        
+
         $this->runningTest = true;
     }
 
