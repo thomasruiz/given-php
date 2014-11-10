@@ -4,6 +4,10 @@ namespace GivenPHP;
 
 use Commando\Command;
 use GivenPHP\Reporting\IReporter;
+use PHP_CodeCoverage;
+use PHP_CodeCoverage_Filter;
+use PHP_CodeCoverage_Report_Clover;
+use PHP_CodeCoverage_Report_HTML;
 
 class Runner
 {
@@ -61,6 +65,20 @@ class Runner
     private $givenPHP;
 
     /**
+     * True if the command is ran with --coverage-*
+     *
+     * @var bool $hasCoverage
+     */
+    private $hasCoverage;
+
+    /**
+     * The instance of code coverage
+     *
+     * @var PHP_CodeCoverage $coverage
+     */
+    private $coverage;
+
+    /**
      * Constructor
      *
      * @param GivenPHP $givenPHP
@@ -82,6 +100,7 @@ class Runner
     {
         if ($doRun) {
             $this->reporter->runnerStarted($this);
+            $this->initializeCoverageAnalysis();
         }
 
         foreach ($this->filesToExecute as $file) {
@@ -90,6 +109,18 @@ class Runner
 
         if ($doRun) {
             $this->reporter->runnerEnded($this);
+
+            if ($this->hasCoverage()) {
+                if (($path = $this->cli->getOption('coverage-html')->getValue())) {
+                    $writer = new PHP_CodeCoverage_Report_HTML;
+                    $writer->process($this->coverage, $path);
+                }
+
+                if (($path = $this->cli->getOption('coverage-clover')->getValue())) {
+                    $writer = new PHP_CodeCoverage_Report_Clover;
+                    $writer->process($this->coverage, $path);
+                }
+            }
         }
 
         $this->done = true;
@@ -196,7 +227,15 @@ class Runner
     private function runFile($file, $doRun)
     {
         if ($doRun) {
+            if ($this->hasCoverage()) {
+                $this->coverage->start($file);
+            }
+
             include $file;
+
+            if ($this->hasCoverage()) {
+                $this->coverage->stop();
+            }
         }
 
         $this->filesExecuted[] = $file;
@@ -229,5 +268,45 @@ class Runner
                   ->map(function ($reporter) {
                       return "GivenPHP\\Reporting\\{$this->reporters[strtolower($reporter)]}Reporter";
                   });
+
+        $this->cli->option('coverage-html')
+                  ->describedAs('Generate a code coverage report in HTML.');
+        $this->cli->option('coverage-clover')
+                  ->describedAs('Generate a code coverage report in Clover XML.');
+    }
+
+    /**
+     * Return true if the code coverage is activated, false otherwise
+     *
+     * @return boolean
+     */
+    private function hasCoverage()
+    {
+        if (!is_bool($this->hasCoverage)) {
+            $types             = ['html', 'clover'];
+            $this->hasCoverage = false;
+
+            foreach ($types AS $type) {
+                $this->hasCoverage = $this->hasCoverage || isset($this->cli->getFlagValues()['coverage-' . $type]);
+            }
+        }
+
+        return $this->hasCoverage;
+    }
+
+    /**
+     * Initialize the code coverage analysis
+     *
+     * @return void
+     */
+    private function initializeCoverageAnalysis()
+    {
+        if ($this->hasCoverage()) {
+            $filter = new PHP_CodeCoverage_Filter();
+            $filter->addDirectoryToBlacklist('vendor');
+            $filter->addFileToBlacklist(__DIR__ . '/../utils.php');
+
+            $this->coverage = new PHP_CodeCoverage(null, $filter);
+        }
     }
 }
