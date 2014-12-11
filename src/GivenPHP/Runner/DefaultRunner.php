@@ -1,38 +1,31 @@
 <?php namespace GivenPHP\Runner;
 
 use GivenPHP\Compiler\Compiler;
+use GivenPHP\Runner\Contracts\Runner;
 use GivenPHP\Suite\Suite;
 
-class DefaultRunner
+class DefaultRunner implements Runner
 {
 
     /**
-     * Paths to the file(s) that the Runner will require.
-     *
-     * @var string[]
-     */
-    protected $paths;
-
-    /**
      * Construct a new DefaultRunner object.
-     *
-     * @param string $path
      */
-    public function __construct($path)
+    public function __construct()
     {
-        $this->paths = $path;
     }
 
     /**
-     * Run all test suites in the paths informed in Constructor.
+     * Run all test suites in the given paths.
+     *
+     * @param string[] $paths
      *
      * @return bool
      */
-    public function run()
+    public function run($paths)
     {
         $result = true;
 
-        foreach ($this->paths as $path) {
+        foreach ($paths as $path) {
             $result &= $this->runSuite($path);
         }
 

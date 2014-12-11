@@ -20,6 +20,21 @@ if (!function_exists('describe')) {
     }
 }
 
+if (!function_exists('context')) {
+    /**
+     * Isolate a context within the suite.
+     *
+     * @param string   $label
+     * @param callable $callback
+     *
+     * @return void
+     */
+    function context($label, $callback)
+    {
+        current_suite()->isolateContext($label, $callback);
+    }
+}
+
 if (!function_exists('given')) {
     /**
      * Give a new value to the context.

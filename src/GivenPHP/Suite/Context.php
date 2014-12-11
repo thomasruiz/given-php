@@ -69,12 +69,20 @@ class Context
      * @param string   $label
      * @param string   $callback
      * @param Compiler $compiler
+     * @param Context  $parent
      */
-    public function __construct($label, $callback, Compiler $compiler = null)
+    public function __construct($label, $callback, Compiler $compiler = null, Context $parent = null)
     {
         $this->label    = $label;
         $this->callback = $callback;
         $this->compiler = $compiler;
+
+        if ($parent !== null) {
+            $this->compiledValues = $parent->compiledValues;
+            $this->rawValues      = $parent->rawValues;
+            $this->actions        = $parent->actions;
+            $this->label          = $parent->getLabel() . ' ' . $this->label;
+        }
     }
 
     /**
@@ -198,6 +206,16 @@ class Context
     public function setCompiler(Compiler $compiler)
     {
         $this->compiler = $compiler;
+    }
+
+    /**
+     * Get the label for the context.
+     *
+     * @return string
+     */
+    public function getLabel()
+    {
+        return $this->label;
     }
 
     /**

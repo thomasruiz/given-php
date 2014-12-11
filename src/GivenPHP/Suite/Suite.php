@@ -13,6 +13,20 @@ class Suite
     private $compiler;
 
     /**
+     * The contexts of the suite.
+     *
+     * @var Context[]
+     */
+    private $contexts;
+
+    /**
+     * The context that the suite is running.
+     *
+     * @var Context
+     */
+    private $currentContext;
+
+    /**
      * Construct a new Suite object.
      *
      * @param string   $label
@@ -21,6 +35,7 @@ class Suite
     public function __construct($label, $callback)
     {
         $this->currentContext = new Context($label, $callback);
+        $this->contexts[]     = $this->currentContext;
     }
 
     /**
@@ -40,7 +55,33 @@ class Suite
      */
     public function execute()
     {
-        return $this->currentContext->execute();
+        $result = true;
+
+        foreach ($this->contexts as $context) {
+            $this->currentContext = $context;
+            $result &= $context->execute();
+        }
+
+        return $result;
+    }
+
+    /**
+     * Isolate a new context.
+     *
+     * @param string   $label
+     * @param callable $callback
+     *
+     * @return void
+     */
+    public function isolateContext($label, $callback)
+    {
+        $parent = $this->currentContext;
+
+        $this->currentContext = new Context($label, $callback, $this->compiler, $parent);
+        $this->currentContext->run();
+        $this->contexts[] = $this->currentContext;
+
+        $this->currentContext = $parent;
     }
 
     /**
