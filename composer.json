@@ -6,24 +6,19 @@
     "authors": [
         {
             "name": "Thomas Ruiz",
-            "email": "thomas.ruiz.perso@gmail.com"
+            "email": "contact@thomasruiz.eu"
         }
     ],
     "require": {
-        "nategood/commando": "*",
+        "php": ">=5.5.0",
         "symfony/console": "dev-master"
     },
-    "require-dev": {
-        "mockery/mockery": "dev-master",
-        "phpunit/php-code-coverage": "dev-master"
-    },
     "autoload": {
-        "classmap": [
-            "src/",
-            "examples/"
-        ],
+        "psr-4": {
+            "GivenPHP\\": "src/GivenPHP/"
+        },
         "files": [
-            "src/utils.php"
+            "src/helpers.php"
         ]
     }
 }
