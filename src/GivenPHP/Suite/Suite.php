@@ -5,6 +5,11 @@ use GivenPHP\Compiler\Compiler;
 class Suite
 {
 
+    /**
+     * The compiler used for raw values.
+     *
+     * @var Compiler $compiler
+     */
     private $compiler;
 
     /**
@@ -39,6 +44,8 @@ class Suite
     }
 
     /**
+     * Get the current context that we are running.
+     *
      * @return Context
      */
     public function getCurrentContext()
@@ -47,6 +54,8 @@ class Suite
     }
 
     /**
+     * Set the compiler for the suite.
+     *
      * @param Compiler $compiler
      *
      * @return void

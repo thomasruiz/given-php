@@ -4,6 +4,8 @@ class Result
 {
 
     /**
+     * The actual result of the Test.
+     *
      * @var bool
      */
     private $result;
@@ -20,9 +22,21 @@ class Result
 
     /**
      * Return true if the Test was a success.
+     *
+     * @return bool
      */
     public function isSuccess()
     {
         return $this->result;
+    }
+
+    /**
+     * Return false if the Test was a success.
+     *
+     * @return bool
+     */
+    public function isFailure()
+    {
+        return !$this->result;
     }
 }

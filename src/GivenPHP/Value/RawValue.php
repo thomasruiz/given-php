@@ -4,16 +4,22 @@ class RawValue
 {
 
     /**
+     * The label explaining the value.
+     *
      * @var string
      */
     private $label;
 
     /**
+     * The name of the value.
+     *
      * @var string
      */
     private $name;
 
     /**
+     * The raw value stored.
+     *
      * @var mixed
      */
     private $value;
@@ -33,6 +39,8 @@ class RawValue
     }
 
     /**
+     * Get the raw value of the instance.
+     *
      * @return mixed
      */
     public function getValue()
@@ -41,6 +49,8 @@ class RawValue
     }
 
     /**
+     * Get the name of the raw value.
+     *
      * @return string
      */
     public function getName()

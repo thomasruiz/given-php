@@ -1,6 +1,6 @@
 <?php namespace GivenPHP\Value;
 
-class EmptyValue
+abstract class EmptyValue
 {
 
 }

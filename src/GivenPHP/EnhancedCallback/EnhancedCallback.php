@@ -36,7 +36,7 @@ class EnhancedCallback
     }
 
     /**
-     * Invoke the callback with real parameters
+     * Invoke the callback with real parameters.
      *
      * @param bool|Context $context
      * @param array        $parameters
@@ -51,7 +51,7 @@ class EnhancedCallback
     }
 
     /**
-     * Retrieves the parameters of the callback
+     * Retrieves the parameters of the callback.
      *
      * @param Context $context
      * @param bool    $with_names
@@ -73,7 +73,7 @@ class EnhancedCallback
     }
 
     /**
-     * Retrieve the code of the function
+     * Retrieve the code of the function.
      *
      * @return string
      */
@@ -101,7 +101,7 @@ class EnhancedCallback
     }
 
     /**
-     * Retrieve the line of the function
+     * Retrieve the line of the function.
      *
      * @return int
      */
@@ -111,7 +111,7 @@ class EnhancedCallback
     }
 
     /**
-     * Retrieve the file of the function
+     * Retrieve the file of the function.
      *
      * @return string
      */

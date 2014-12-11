@@ -40,6 +40,8 @@ class DefaultRunner
     }
 
     /**
+     * Run a single suite in a file.
+     *
      * @param string $path
      *
      * @return bool

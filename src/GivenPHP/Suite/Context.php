@@ -66,11 +66,11 @@ class Context
     /**
      * Construct a new Context object.
      *
-     * @param $label
-     * @param $callback
-     * @param $compiler
+     * @param string   $label
+     * @param string   $callback
+     * @param Compiler $compiler
      */
-    public function __construct($label, $callback, $compiler = null)
+    public function __construct($label, $callback, Compiler $compiler = null)
     {
         $this->label    = $label;
         $this->callback = $callback;
@@ -107,6 +107,8 @@ class Context
 
     /**
      * Execute the actions registered for this context.
+     *
+     * @return void
      */
     public function executeActions()
     {
@@ -120,7 +122,7 @@ class Context
     }
 
     /**
-     * Compile the value if needed, and return a reference to it
+     * Compile the value if needed, and return a reference to it.
      *
      * @param string $name
      *
@@ -141,6 +143,8 @@ class Context
      * @param string $label
      * @param string $name
      * @param mixed  $value
+     *
+     * @return void
      */
     public function addValue($label, $name, $value)
     {
@@ -153,6 +157,8 @@ class Context
      * @param string   $label
      * @param string   $name
      * @param callable $action
+     *
+     * @return void
      */
     public function addAction($label, $name, $action)
     {
@@ -164,6 +170,8 @@ class Context
      *
      * @param string   $label
      * @param callable $test
+     *
+     * @return void
      */
     public function addTest($label, $test)
     {
@@ -171,6 +179,8 @@ class Context
     }
 
     /**
+     * Get the compiler for the context.
+     *
      * @return Compiler
      */
     public function getCompiler()
@@ -179,7 +189,11 @@ class Context
     }
 
     /**
+     * Set the compiler for the context.
+     *
      * @param Compiler $compiler
+     *
+     * @return void
      */
     public function setCompiler(Compiler $compiler)
     {
@@ -212,6 +226,8 @@ class Context
 
     /**
      * Clean up the context for another test.
+     *
+     * @return void
      */
     protected function cleanUp()
     {

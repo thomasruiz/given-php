@@ -11,6 +11,8 @@ class Test
     private $result;
 
     /**
+     * The label explaining the test.
+     *
      * @var string
      */
     private $label;
@@ -26,8 +28,8 @@ class Test
     /**
      * Construct a new Test object.
      *
-     * @param $label
-     * @param $callback
+     * @param string   $label
+     * @param callable $callback
      */
     public function __construct($label, $callback)
     {
