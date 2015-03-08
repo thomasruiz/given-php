@@ -37,7 +37,7 @@ class Specification implements Countable
      * @param array   $constructorParameters
      * @param Context $context
      */
-    public function __construct($classUnderSpec, $constructorParameters, Context $context)
+    public function __construct($classUnderSpec, array $constructorParameters, Context $context)
     {
         $this->title                 = $classUnderSpec;
         $this->contexts[]            = $this->currentContext = $context;

@@ -6,7 +6,7 @@ use GivenPHP\TestSuite\Suite;
 
 return describe(Specification::class, with('className', 'params', 'context'), function () {
     given('className', function () { return 'Foo'; });
-    given('params', function () { return 'Bar'; });
+    given('params', function () { return [ 'Bar' ]; });
     given('context', function (Context $contextProphecy) { return $contextProphecy->reveal(); });
 
     then(function (Specification $that, $className) { return $that->getTitle() === $className; });
@@ -36,8 +36,11 @@ return describe(Specification::class, with('className', 'params', 'context'), fu
 
     context('when calling undefined methods', function () {
         given('name', function () { return 'foo'; });
-        given('value', function () { return function () {}; });
+        given('value', function () { return function () { }; });
         when(function (Specification $that, $name, $value) { $that->addValue($name, $value); });
-        then(function (Context $contextProphecy, $name, $value) { $contextProphecy->addValue($name, $value)->shouldHaveBeenCalled(); });
+        then(function (Context $contextProphecy, $name, $value) {
+            $contextProphecy->addValue($name, $value)
+                            ->shouldHaveBeenCalled();
+        });
     });
 });

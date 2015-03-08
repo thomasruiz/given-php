@@ -2,7 +2,7 @@
 
 use GivenPHP\TestSuite\Context;
 
-return describe(Context::class, [ 'context', 'callback', 'parent' ], function () {
+return describe(Context::class, with('context', 'callback', 'parent'), function () {
     given('context', function () { return 'when foo'; });
     given('callback', function () { return function () { return 'callback called'; }; });
     given('parent', function (Context $parentContext) { return $parentContext->reveal(); });

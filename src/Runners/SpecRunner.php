@@ -25,29 +25,43 @@ class SpecRunner
 
     /**
      * @param Specification $spec
+     *
+     * @return bool
      */
     public function run(Specification $spec)
     {
+        $result = true;
+
         foreach ($spec->getContexts() as $context) {
-            $this->runExamples($context, $spec);
+            $result = $this->runExamples($context, $spec) && $result;
         }
+
+        return $result;
     }
 
     /**
      * @param Context       $context
      * @param Specification $spec
+     *
+     * @return bool
      */
     private function runExamples(Context $context, Specification $spec)
     {
+        $result = true;
+
         foreach ($context->getExamples() as $example) {
-            $this->runExample(clone $context, $example, $spec);
+            $result = $this->runExample(clone $context, $example, $spec) && $result;
         }
+
+        return $result;
     }
 
     /**
      * @param Context       $context
      * @param callable      $example
      * @param Specification $spec
+     *
+     * @return bool
      */
     private function runExample(Context $context, callable $example, Specification $spec)
     {
@@ -87,5 +101,7 @@ class SpecRunner
         var_dump($result);
 
         $prophet->checkPredictions();
+        
+        return $result === null || $result === true;
     }
 }
