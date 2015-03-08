@@ -67,24 +67,29 @@ class SpecRunner
     {
         $prophet = new Prophet();
 
+        $this->prepareForTest($context, $spec, $prophet);
+
+        $result = $this->functionRunner->run($example, $context, $prophet);
+        var_dump($result);
+
+        $prophet->checkPredictions();
+
+        return $result === null || $result === true;
+    }
+
+    /**
+     * @param Context       $context
+     * @param Specification $spec
+     * @param Prophet       $prophet
+     */
+    private function prepareForTest(Context $context, Specification $spec, Prophet $prophet)
+    {
         foreach ($context->getLetCallbacks() as $let) {
             $this->functionRunner->run($let, $context, $prophet);
         }
 
-        $classReflection = new ReflectionClass($spec->getTitle());
-
-        $parameters = [ ];
-        foreach ($spec->getConstructorParameters() as $parameter) {
-            $result       = $this->functionRunner->run($context->getValue($parameter), $context, $prophet);
-            $parameters[] = $context->addCompiledValue($parameter, $result);
-        }
-
-        $context->addCompiledValue('that', $classReflection->newInstanceArgs($parameters));
-
-        foreach ($context->getActions() as $action) {
-            $this->functionRunner->buildParameters($action, $context, $prophet);
-        }
-
+        $this->buildObjectInstance($context, $spec, $prophet);
+        
         foreach ($context->getModifiers() as $modifier) {
             $this->functionRunner->run($modifier, $context, $prophet);
         }
@@ -96,12 +101,23 @@ class SpecRunner
                 $context->addCompiledValue($name, $result);
             }
         }
+    }
 
-        $result = $this->functionRunner->run($example, $context, $prophet);
-        var_dump($result);
+    /**
+     * @param Context       $context
+     * @param Specification $spec
+     * @param Prophet       $prophet
+     */
+    private function buildObjectInstance(Context $context, Specification $spec, Prophet $prophet)
+    {
+        $classReflection = new ReflectionClass($spec->getTitle());
 
-        $prophet->checkPredictions();
-        
-        return $result === null || $result === true;
+        $parameters = [ ];
+        foreach ($spec->getConstructorParameters() as $parameter) {
+            $result       = $this->functionRunner->run($context->getValue($parameter), $context, $prophet);
+            $parameters[] = $context->addCompiledValue($parameter, $result);
+        }
+
+        $context->addCompiledValue('that', $classReflection->newInstanceArgs($parameters));
     }
 }
