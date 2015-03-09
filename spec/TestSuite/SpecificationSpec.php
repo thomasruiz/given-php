@@ -39,8 +39,7 @@ return describe(Specification::class, with('className', 'params', 'context'), fu
         given('value', function () { return function () { }; });
         when(function (Specification $that, $name, $value) { $that->addValue($name, $value); });
         then(function (Context $contextProphecy, $name, $value) {
-            $contextProphecy->addValue($name, $value)
-                            ->shouldHaveBeenCalled();
+            $contextProphecy->addValue($name, $value)->shouldHaveBeenCalled();
         });
     });
 });

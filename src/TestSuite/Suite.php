@@ -8,7 +8,7 @@ class Suite implements Countable
     /**
      * @var Specification[]
      */
-    private $specs = [];
+    private $specs = [ ];
 
     /**
      * Add a spec to the test suite.

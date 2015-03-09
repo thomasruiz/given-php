@@ -49,7 +49,7 @@ class Specification implements Countable
      */
     public function addContext(Context $context)
     {
-        $parentContext = $this->currentContext;
+        $parentContext    = $this->currentContext;
         $this->contexts[] = $context;
 
         $this->currentContext = $context;

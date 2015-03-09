@@ -34,6 +34,4 @@ return describe(FunctionRunner::class, function () {
             return $result === [ $prophecy ];
         });
     });
-
-
 });
