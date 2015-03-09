@@ -50,7 +50,7 @@ class SpecRunner
     {
         $specResult = true;
 
-        foreach ($context->getExamples() as $example) {
+        foreach ($context->getExamples() as $i => $example) {
             try {
                 $result = $this->runExample(clone $context, $example, $spec);
             } catch (Exception $e) {
@@ -58,7 +58,7 @@ class SpecRunner
                 $result = false;
             }
 
-            var_dump($result);
+            echo $context->getContext() . ": $i => ". ($result ? '.' : 'X') . "\n";
 
             if ($result === false) {
                 $specResult = false;

@@ -10,6 +10,7 @@ return describe(SpecRunner::class, with('functionRunner'), function () {
     given('functionRunner', function (FunctionRunner $functionRunnerProphecy) { return $functionRunnerProphecy->reveal(); });
     given('callback', function () { return function () { }; });
 
+    given(function (Context $context) { $context->getContext()->willReturn("test in progress"); });
     given(function (Context $context) { $context->getCompiledValues()->willReturn([ ]); });
     given(function (Context $context) { $context->getActions()->willReturn([ ]); });
     given(function (Context $context) { $context->getModifiers()->willReturn([ ]); });
