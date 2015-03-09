@@ -21,9 +21,9 @@ return describe(SpecRunner::class, with('functionRunner'), function () {
     given(function (Specification $spec) { $spec->getConstructorParameters()->willReturn([ ]); });
     given(function (Context $context) { $context->addCompiledValue('that', Argument::type('stdClass'))->shouldBeCalled(); });
 
-    context('when running test', function () {
-        when('result', function (SpecRunner $that, Specification $spec) { return $that->run($spec->reveal()); });
+    when('result', function (SpecRunner $that, Specification $spec) { return $that->run($spec->reveal()); });
 
+    context('when running test', function () {
         context('that passes', function () {
             given(function (FunctionRunner $functionRunnerProphecy, $callback) {
                 $functionRunnerProphecy->run($callback, Argument::type('\GivenPHP\TestSuite\Context'),
@@ -50,5 +50,24 @@ return describe(SpecRunner::class, with('functionRunner'), function () {
 
             then(function ($result) { return $result === false; });
         });
+    });
+
+    context('when running multiple tests', function () {
+        given('failing', function () { return function () { }; });
+        given(function (Context $context, $callback, $failing) {
+            $context->getExamples()->willReturn([ $callback, $failing, $callback ]);
+        });
+
+        given(function (FunctionRunner $functionRunnerProphecy, $callback) {
+            $functionRunnerProphecy->run($callback, Argument::type('\GivenPHP\TestSuite\Context'),
+                Argument::type('\Prophecy\Prophet'))->willReturn(true)->shouldBeCalledTimes(2);
+        });
+
+        given(function (FunctionRunner $functionRunnerProphecy, $failing) {
+            $functionRunnerProphecy->run($failing, Argument::type('\GivenPHP\TestSuite\Context'),
+                Argument::type('\Prophecy\Prophet'))->willReturn(false)->shouldBeCalled();
+        });
+
+        then(function ($result) { return $result === false; });
     });
 });
