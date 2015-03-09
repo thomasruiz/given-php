@@ -1,5 +1,6 @@
 <?php namespace GivenPHP\Runners;
 
+use Exception;
 use GivenPHP\TestSuite\Context;
 use GivenPHP\TestSuite\Specification;
 use Prophecy\Prophet;
@@ -47,13 +48,24 @@ class SpecRunner
      */
     private function runExamples(Context $context, Specification $spec)
     {
-        $result = true;
+        $specResult = true;
 
         foreach ($context->getExamples() as $example) {
-            $result = $this->runExample(clone $context, $example, $spec) && $result;
+            try {
+                $result = $this->runExample(clone $context, $example, $spec);
+            } catch (Exception $e) {
+                var_dump($e->getMessage());
+                $result = false;
+            }
+
+            var_dump($result);
+
+            if ($result === false) {
+                $specResult = false;
+            }
         }
 
-        return $result;
+        return $specResult;
     }
 
     /**
@@ -70,7 +82,6 @@ class SpecRunner
         $this->prepareForTest($context, $spec, $prophet);
 
         $result = $this->functionRunner->run($example, $context, $prophet);
-        var_dump($result);
 
         $prophet->checkPredictions();
 
@@ -89,7 +100,7 @@ class SpecRunner
         }
 
         $this->buildObjectInstance($context, $spec, $prophet);
-        
+
         foreach ($context->getModifiers() as $modifier) {
             $this->functionRunner->run($modifier, $context, $prophet);
         }
