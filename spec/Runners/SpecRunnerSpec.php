@@ -21,25 +21,25 @@ return describe(SpecRunner::class, with('functionRunner'), function () {
     given(function (Specification $spec) { $spec->getConstructorParameters()->willReturn([ ]); });
     given(function (Context $context) { $context->addCompiledValue('that', Argument::type('stdClass'))->shouldBeCalled(); });
 
-    context('when running passing test', function () {
-        given(function (FunctionRunner $functionRunnerProphecy, $callback) {
-            $functionRunnerProphecy->run($callback, Argument::type('\GivenPHP\TestSuite\Context'),
-                Argument::type('\Prophecy\Prophet'))->willReturn(true)->shouldBeCalled();
-        });
-
+    context('when running test', function () {
         when('result', function (SpecRunner $that, Specification $spec) { return $that->run($spec->reveal()); });
 
-        then(function ($result) { return $result === true; });
-    });
+        context('that passes', function () {
+            given(function (FunctionRunner $functionRunnerProphecy, $callback) {
+                $functionRunnerProphecy->run($callback, Argument::type('\GivenPHP\TestSuite\Context'),
+                    Argument::type('\Prophecy\Prophet'))->willReturn(true)->shouldBeCalled();
+            });
 
-    context('when running failing test', function () {
-        given(function (FunctionRunner $functionRunnerProphecy, $callback) {
-            $functionRunnerProphecy->run($callback, Argument::type('\GivenPHP\TestSuite\Context'),
-                Argument::type('\Prophecy\Prophet'))->willReturn(false)->shouldBeCalled();
+            then(function ($result) { return $result === true; });
         });
 
-        when('result', function (SpecRunner $that, Specification $spec) { return $that->run($spec->reveal()); });
+        context('that fails', function () {
+            given(function (FunctionRunner $functionRunnerProphecy, $callback) {
+                $functionRunnerProphecy->run($callback, Argument::type('\GivenPHP\TestSuite\Context'),
+                    Argument::type('\Prophecy\Prophet'))->willReturn(false)->shouldBeCalled();
+            });
 
-        then(function ($result) { return $result === false; });
+            then(function ($result) { return $result === false; });
+        });
     });
 });
