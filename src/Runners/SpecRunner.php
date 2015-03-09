@@ -54,11 +54,11 @@ class SpecRunner
             try {
                 $result = $this->runExample(clone $context, $example, $spec);
             } catch (Exception $e) {
-                echo 'Exception occured: ' . $e->getMessage() . "\n";
+                echo '===Exception occured: ' . $e->getMessage() . "\n";
                 $result = false;
             }
 
-            echo $context->getContext() . ": $i => ". ($result ? '.' : 'X') . "\n";
+            echo ( $result ? '.' : 'X' ) . " " . $context->getContext() . ": $i\n";
 
             if ($result === false) {
                 $specResult = false;
