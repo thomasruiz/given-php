@@ -54,7 +54,7 @@ class SpecRunner
             try {
                 $result = $this->runExample(clone $context, $example, $spec);
             } catch (Exception $e) {
-                var_dump($e->getMessage());
+                echo 'Exception occured: ' . $e->getMessage() . "\n";
                 $result = false;
             }
 

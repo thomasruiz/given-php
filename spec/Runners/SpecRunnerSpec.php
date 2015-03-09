@@ -10,7 +10,7 @@ return describe(SpecRunner::class, with('functionRunner'), function () {
     given('functionRunner', function (FunctionRunner $functionRunnerProphecy) { return $functionRunnerProphecy->reveal(); });
     given('callback', function () { return function () { }; });
 
-    given(function (Context $context) { $context->getContext()->willReturn("test in progress"); });
+    given(function (Context $context) { $context->getContext()->willReturn("test in progress (ignore)"); });
     given(function (Context $context) { $context->getCompiledValues()->willReturn([ ]); });
     given(function (Context $context) { $context->getActions()->willReturn([ ]); });
     given(function (Context $context) { $context->getModifiers()->willReturn([ ]); });
@@ -37,6 +37,15 @@ return describe(SpecRunner::class, with('functionRunner'), function () {
             given(function (FunctionRunner $functionRunnerProphecy, $callback) {
                 $functionRunnerProphecy->run($callback, Argument::type('\GivenPHP\TestSuite\Context'),
                     Argument::type('\Prophecy\Prophet'))->willReturn(false)->shouldBeCalled();
+            });
+
+            then(function ($result) { return $result === false; });
+        });
+
+        context('that fails with exception', function () {
+            given(function (FunctionRunner $functionRunnerProphecy, $callback) {
+                $functionRunnerProphecy->run($callback, Argument::type('\GivenPHP\TestSuite\Context'),
+                    Argument::type('\Prophecy\Prophet'))->willThrow('Exception')->shouldBeCalled();
             });
 
             then(function ($result) { return $result === false; });
