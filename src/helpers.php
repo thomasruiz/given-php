@@ -11,7 +11,7 @@ if (!function_exists('let')) {
      */
     function let($callback)
     {
-        return GivenPHP::addLetCallback($callback);
+        GivenPHP::addLetCallback($callback);
     }
 }
 
@@ -40,15 +40,15 @@ if (!function_exists('with')) {
     /**
      * Describe a new specification
      *
-     * @param mixed $constructorParameters,...
-     * @param mixed $constructorParameters,... unlimited OPTIONAL
+     * @param mixed $constructorParameters
+     * @param mixed $_
      *
      * @return array
      */
-    function with($constructorParameters)
+    function with($constructorParameters, $_ = null)
     {
         return func_num_args() > 1 ? func_get_args()
-            : (is_array($constructorParameters) ? $constructorParameters : [ $constructorParameters ]);
+            : ( is_array($constructorParameters) ? $constructorParameters : [ $constructorParameters ] );
     }
 }
 
@@ -58,12 +58,10 @@ if (!function_exists('context')) {
      *
      * @param string   $context
      * @param callable $callback
-     *
-     * @return Suite
      */
     function context($context, callable $callback)
     {
-        return GivenPHP::__callStatic('addContext', [ $context, $callback ]);
+        GivenPHP::__callStatic('addContext', [ $context, $callback ]);
     }
 }
 
@@ -73,16 +71,14 @@ if (!function_exists('given')) {
      *
      * @param string|callable $nameOrCallback
      * @param callable        $callback
-     *
-     * @return Suite
      */
     function given($nameOrCallback, callable $callback = null)
     {
         if ($callback === null) {
-            return GivenPHP::addModifier($nameOrCallback);
+            GivenPHP::addModifier($nameOrCallback);
+        } else {
+            GivenPHP::addValue($nameOrCallback, $callback);
         }
-
-        return GivenPHP::addValue($nameOrCallback, $callback);
     }
 }
 
@@ -92,16 +88,14 @@ if (!function_exists('when')) {
      *
      * @param string|callable $nameOrCallback
      * @param callable        $callback
-     *
-     * @return Suite
      */
     function when($nameOrCallback, callable $callback = null)
     {
         if ($callback === null) {
-            return GivenPHP::addActionWithoutResult($nameOrCallback);
+            GivenPHP::addActionWithoutResult($nameOrCallback);
+        } else {
+            GivenPHP::addActionWithResult($nameOrCallback, $callback);
         }
-
-        return GivenPHP::addActionWithResult($nameOrCallback, $callback);
     }
 }
 
@@ -110,11 +104,9 @@ if (!function_exists('then')) {
      * Add a new example to the spec
      *
      * @param callable $callback
-     *
-     * @return Suite
      */
     function then(callable $callback)
     {
-        return GivenPHP::addExample($callback);
+        GivenPHP::addExample($callback);
     }
 }

@@ -6,12 +6,12 @@ use GivenPHP\TestSuite\Suite;
 
 /**
  * Class GivenPHP
- * @method void addValue( $name, callable $callback )
- * @method void addModifier( callable $callback )
- * @method void addActionWithResult( $name, callable $callback )
- * @method void addActionWithoutResult( callable $callback )
- * @method void addLetCallback( callable $callback )
- * @method void addExample( callable $callback )
+ * @method static void addValue( $name, callable $callback )
+ * @method static void addModifier( callable $callback )
+ * @method static void addActionWithResult( $name, callable $callback )
+ * @method static void addActionWithoutResult( callable $callback )
+ * @method static void addLetCallback( callable $callback )
+ * @method static void addExample( callable $callback )
  */
 class GivenPHP
 {
