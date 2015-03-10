@@ -5,10 +5,20 @@ use GivenPHP\Container;
 use GivenPHP\GivenPHP;
 use GivenPHP\Runners\FunctionRunner;
 use GivenPHP\Runners\SpecRunner;
+use League\Flysystem\Adapter\Local;
+use League\Flysystem\Filesystem;
+use League\Flysystem\Plugin\ListFiles;
 
 require 'vendor/autoload.php';
 
 $container = new Container();
+$container->shared('fs', function () use ($container) {
+    $fs = new Filesystem($container->shared('fs.local'));
+
+    return $fs->addPlugin($container->shared('fs.plugins.listfiles'));
+});
+$container->shared('fs.local', function () { return new Local(getcwd()); });
+$container->shared('fs.plugins.listfiles', function () { return new ListFiles(); });
 $container->define('testsuite.suite', '\GivenPHP\TestSuite\Suite');
 $container->define('testsuite.spec', '\GivenPHP\TestSuite\Specification');
 $container->define('testsuite.context', '\GivenPHP\TestSuite\Context');
@@ -18,28 +28,16 @@ $container->shared('runners.spec', function () use ($container) {
 });
 $container->shared('givenphp', new GivenPHP($container, $container->build('testsuite.suite')));
 
-$spec = require 'spec/TestSuite/SuiteSpec.php';
-$spec->run();
+$specs = [ ];
 
-$spec2 = require 'spec/TestSuite/SpecificationSpec.php';
-$spec2->run();
-
-$spec3 = require 'spec/TestSuite/ContextSpec.php';
-$spec3->run();
-
-$spec4 = require 'spec/Runners/FunctionRunnerSpec.php';
-$spec4->run();
-
-$spec5 = require 'spec/Runners/SpecRunnerSpec.php';
-$spec5->run();
-
-$spec6 = require 'spec/ContainerSpec.php';
-$spec6->run();
+foreach ($container->shared('fs')->listFiles('spec', true) as $file) {
+    $spec = require $file['path'];
+    $spec->run();
+    $specs[] = $spec;
+}
 
 $executer = $container->shared('runners.spec');
-$executer->run($spec);
-$executer->run($spec2);
-$executer->run($spec3);
-$executer->run($spec4);
-$executer->run($spec5);
-$executer->run($spec6);
+
+foreach ($specs as $spec) {
+    $executer->run($spec);
+}

@@ -25,11 +25,11 @@ class Container
     public function shared($name, $instance = null)
     {
         if ($instance === null) {
-            return $this->instances[ $name ];
-        }
+            if (!is_object($this->instances[$name]) || $this->instances[$name] instanceof Closure) {
+                $this->instances[$name] = $this->instances[$name]();
+            }
 
-        if (!is_object($instance) || $instance instanceof Closure) {
-            $instance = $instance();
+            return $this->instances[ $name ];
         }
 
         $this->instances[ $name ] = $instance;
