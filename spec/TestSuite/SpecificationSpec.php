@@ -11,9 +11,8 @@ return describe(Specification::class, with('className', 'params', 'context'), fu
 
     then(function (Specification $that, $className) { return $that->getTitle() === $className; });
     then(function (Specification $that, $params) { return $that->getConstructorParameters() === $params; });
-    then(function (Specification $that) { return count($that->getContexts()) === 1; });
     then(function (Specification $that, $context) { return $that->getCurrentContext() === $context; });
-    then(function (Specification $that, $context) { return $that->getContexts()[0] === $context; });
+    then(function (Specification $that, $context) { return $that->getContexts() === [ $context ]; });
 
     context('when setting Suite', function () {
         when(function (Specification $that, Suite $suite) { $that->setSuite($suite); });
@@ -25,6 +24,7 @@ return describe(Specification::class, with('className', 'params', 'context'), fu
         given(function (Context $contextProphecy) { $contextProphecy->run()->shouldBeCalled(); });
         when(function (Specification $that, $context) { $that->addContext($context); });
         when(function (Specification $that, $context) { $that->addContext($context); });
+        then(function (Specification $that) { return count($that->getContexts()) === 3; });
         then(function (Specification $that) { return count($that) === 24; });
     });
 
@@ -34,7 +34,7 @@ return describe(Specification::class, with('className', 'params', 'context'), fu
         then(function (Context $contextProphecy) { $contextProphecy->run()->shouldHaveBeenCalled(); });
     });
 
-    context('when calling undefined methods', function () {
+    context('when proxying undefined methods to context', function () {
         given('name', function () { return 'foo'; });
         given('value', function () { return function () { }; });
         when(function (Specification $that, $name, $value) { $that->addValue($name, $value); });
