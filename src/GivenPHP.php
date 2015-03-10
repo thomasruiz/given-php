@@ -1,6 +1,5 @@
 <?php namespace GivenPHP;
 
-use GivenPHP\TestSuite\Context;
 use GivenPHP\TestSuite\Specification;
 use GivenPHP\TestSuite\Suite;
 
@@ -60,11 +59,12 @@ class GivenPHP
      */
     public function describe($classUnderSpec, array $constructorArguments, callable $callback)
     {
-        $spec = new Specification($classUnderSpec, $constructorArguments, new Context($classUnderSpec, $callback));
-        $this->suite->addSpecification($spec);
-        $this->currentSpec = $spec;
+        $context = $this->container->build('testsuite.context', [ $classUnderSpec, $callback ]);
+        $spec    = $this->container->build('testsuite.spec', [ $classUnderSpec, $constructorArguments, $context ]);
 
-        return $spec;
+        $this->suite->addSpecification($spec);
+
+        return $this->currentSpec = $spec;
     }
 
     /**
@@ -75,9 +75,9 @@ class GivenPHP
      */
     public function addContext($context, callable $callback)
     {
-        $parentContext = $this->currentSpec->getCurrentContext();
-        $context       = new Context($context, $callback, $parentContext);
-        $this->currentSpec->addContext($context);
+        $params = [ $context, $callback, $this->currentSpec->getCurrentContext() ];
+
+        $this->currentSpec->addContext($this->container->build('testsuite.context', $params));
     }
 
     /**

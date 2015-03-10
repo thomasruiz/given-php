@@ -10,6 +10,8 @@ require 'vendor/autoload.php';
 
 $container = new Container();
 $container->define('testsuite.suite', '\GivenPHP\TestSuite\Suite');
+$container->define('testsuite.spec', '\GivenPHP\TestSuite\Specification');
+$container->define('testsuite.context', '\GivenPHP\TestSuite\Context');
 $container->shared('runners.func', function () { return new FunctionRunner(); });
 $container->shared('runners.spec', function () use ($container) {
     return new SpecRunner($container->shared('runners.func'));
