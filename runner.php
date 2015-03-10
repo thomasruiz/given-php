@@ -1,10 +1,18 @@
 <?php
 error_reporting(E_ALL);
 
+use GivenPHP\Container;
 use GivenPHP\Runners\FunctionRunner;
 use GivenPHP\Runners\SpecRunner;
 
 require 'vendor/autoload.php';
+
+$container = new Container();
+$container->shared('runners.func', function () { return new FunctionRunner(); });
+$container->shared('runners.spec', function () use ($container) {
+    return new SpecRunner($container->shared('runners.func'));
+});
+
 $spec = require 'spec/TestSuite/SuiteSpec.php';
 $spec->run();
 
@@ -20,9 +28,13 @@ $spec4->run();
 $spec5 = require 'spec/Runners/SpecRunnerSpec.php';
 $spec5->run();
 
-$executer = new SpecRunner(new FunctionRunner());
+$spec6 = require 'spec/ContainerSpec.php';
+$spec6->run();
+
+$executer = $container->shared('runners.spec');
 $executer->run($spec);
 $executer->run($spec2);
 $executer->run($spec3);
 $executer->run($spec4);
 $executer->run($spec5);
+$executer->run($spec6);
