@@ -1,6 +1,4 @@
 <?php
-error_reporting(E_ALL);
-
 use GivenPHP\Container;
 use GivenPHP\GivenPHP;
 use GivenPHP\Runners\FunctionRunner;
