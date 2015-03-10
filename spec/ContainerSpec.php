@@ -15,4 +15,10 @@ return describe(Container::class, function () {
             then(function (Container $that) { return $that->shared('foo') instanceof stdClass; });
         });
     });
+
+    context("when building an object", function () {
+        given(function (Container $that) { $that->define('foo', '\stdClass'); });
+        when('fooInstance', function (Container $that) { return $that->build('foo'); });
+        then(function ($fooInstance) { return $fooInstance instanceof stdClass; });
+    });
 });

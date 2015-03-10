@@ -1,6 +1,7 @@
 <?php namespace GivenPHP;
 
 use Closure;
+use ReflectionClass;
 
 class Container
 {
@@ -8,7 +9,12 @@ class Container
     /**
      * @var object[]
      */
-    private $instances;
+    private $instances = [ ];
+
+    /**
+     * @var string[]
+     */
+    private $definitions = [ ];
 
     /**
      * @param string          $name
@@ -26,8 +32,34 @@ class Container
             $instance = $instance();
         }
 
-        $this->instances[$name] = $instance;
+        $this->instances[ $name ] = $instance;
 
         return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param string $class
+     *
+     * @return $this
+     */
+    public function define($name, $class)
+    {
+        $this->definitions[ $name ] = $class;
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param array  $args
+     *
+     * @return mixed
+     */
+    public function build($name, $args = [ ])
+    {
+        $class = new ReflectionClass($this->definitions[ $name ]);
+
+        return $class->newInstanceArgs($args);
     }
 }

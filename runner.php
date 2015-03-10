@@ -2,16 +2,19 @@
 error_reporting(E_ALL);
 
 use GivenPHP\Container;
+use GivenPHP\GivenPHP;
 use GivenPHP\Runners\FunctionRunner;
 use GivenPHP\Runners\SpecRunner;
 
 require 'vendor/autoload.php';
 
 $container = new Container();
+$container->define('testsuite.suite', '\GivenPHP\TestSuite\Suite');
 $container->shared('runners.func', function () { return new FunctionRunner(); });
 $container->shared('runners.spec', function () use ($container) {
     return new SpecRunner($container->shared('runners.func'));
 });
+$container->shared('givenphp', new GivenPHP($container, $container->build('testsuite.suite')));
 
 $spec = require 'spec/TestSuite/SuiteSpec.php';
 $spec->run();

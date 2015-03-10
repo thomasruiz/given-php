@@ -17,11 +17,6 @@ class GivenPHP
 {
 
     /**
-     * @var GivenPHP
-     */
-    private static $instance;
-
-    /**
      * @var Suite
      */
     private $suite;
@@ -32,25 +27,26 @@ class GivenPHP
     private $currentSpec;
 
     /**
-     * Construct a new GivenPHP object.
-     *
-     * @param Suite $suite
+     * @var Container
      */
-    public function __construct(Suite $suite)
-    {
-        $this->suite = $suite;
-    }
+    private $container;
 
     /**
-     * @return self
+     * @var self
      */
-    public static function getInstance()
-    {
-        if (self::$instance === null) {
-            self::$instance = new self(new Suite());
-        }
+    private static $instance;
 
-        return self::$instance;
+    /**
+     * Construct a new GivenPHP object.
+     *
+     * @param Container $container
+     * @param Suite     $suite
+     */
+    public function __construct(Container $container, Suite $suite)
+    {
+        $this->suite     = $suite;
+        $this->container = $container;
+        self::$instance  = $this;
     }
 
     /**
@@ -107,7 +103,7 @@ class GivenPHP
      */
     public static function __callStatic($name, $arguments)
     {
-        return call_user_func_array([ self::getInstance(), $name ], $arguments);
+        return call_user_func_array([ self::$instance, $name ], $arguments);
     }
 
     /**
