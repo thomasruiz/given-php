@@ -29,9 +29,11 @@ $container->shared('givenphp', new GivenPHP($container, $container->build('tests
 $specs = [ ];
 
 foreach ($container->shared('fs')->listFiles('spec', true) as $file) {
-    $spec = require $file['path'];
-    $spec->run();
-    $specs[] = $spec;
+    if (strrpos($file['basename'], 'Spec.php') === strlen($file['basename']) - strlen('Spec.php')) {
+        $spec = require $file['path'];
+        $spec->run();
+        $specs[] = $spec;
+    }
 }
 
 $executer = $container->shared('runners.spec');
