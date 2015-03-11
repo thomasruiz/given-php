@@ -65,7 +65,7 @@ class FunctionRunner
      */
     public function handleError($level, $message)
     {
-        $regex = '/^Argument (\d)+ passed to ([\w\\\]+){closure}\(\) must (?:be an instance of|implement interface) '
+        $regex = '/^Argument (\d)+ passed to ([\w\\\:]+){closure}\(\) must (?:be an instance of|implement interface) '
                  . '([\w\\\]+),(?: instance of)? ([\w\\\]+) given/';
 
         if (E_RECOVERABLE_ERROR === $level && preg_match($regex, $message, $matches)) {

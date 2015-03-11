@@ -27,10 +27,16 @@ return describe(Foo::class, with('constructorParam1', 'constructorParam2'), func
 }
 ```
 
+## Run the specs
+
+```
+$ vendor/bin/given-php run
+```
+
 ## Todos
 
 - Refactor the code and have a real flow for the SpecRunner
- - Add a real runner (using [Symfony/Command](https://github.com/symfony/command) and maybe [thephpleague/flysystem](https://github.com/thephpleague/flysystem))
+ - ~~Add a real runner (using [Symfony/Command](https://github.com/symfony/command) and maybe [thephpleague/flysystem](https://github.com/thephpleague/flysystem))~~
  - Add a real formatter
 - Handling errors with then(failed()) and then(failedWith('ExceptionType'))
 - Transform PHPErrors into Exceptions
