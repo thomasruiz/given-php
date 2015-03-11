@@ -13,7 +13,8 @@
     "require": {
         "phpspec/prophecy": "~1.3",
         "league/flysystem": "~1.0",
-        "symfony/console": "~2.6"
+        "symfony/console": "~2.6",
+        "symfony/event-dispatcher": "~2.6"
     },
     "autoload": {
         "psr-4": {
