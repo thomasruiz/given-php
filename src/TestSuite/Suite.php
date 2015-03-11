@@ -11,6 +11,16 @@ class Suite implements Countable
     private $specs = [ ];
 
     /**
+     * @var float
+     */
+    private $startTime;
+
+    /**
+     * @var float
+     */
+    private $endTime;
+
+    /**
      * Add a spec to the test suite.
      *
      * @param Specification $spec
@@ -39,5 +49,37 @@ class Suite implements Countable
     public function count()
     {
         return array_sum(array_map('count', $this->specs));
+    }
+
+    /**
+     * @return float
+     */
+    public function getStartTime()
+    {
+        return $this->startTime;
+    }
+
+    /**
+     * @param float $startTime
+     */
+    public function setStartTime($startTime)
+    {
+        $this->startTime = $startTime;
+    }
+
+    /**
+     * @return float
+     */
+    public function getEndTime()
+    {
+        return $this->endTime;
+    }
+
+    /**
+     * @param float $endTime
+     */
+    public function setEndTime($endTime)
+    {
+        $this->endTime = $endTime;
     }
 }
