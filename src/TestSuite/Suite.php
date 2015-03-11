@@ -21,6 +21,16 @@ class Suite implements Countable
     private $endTime;
 
     /**
+     * @var float
+     */
+    private $loadingStartTime;
+
+    /**
+     * @var float
+     */
+    private $loadingEndTime;
+
+    /**
      * Add a spec to the test suite.
      *
      * @param Specification $spec
@@ -81,5 +91,37 @@ class Suite implements Countable
     public function setEndTime($endTime)
     {
         $this->endTime = $endTime;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLoadingStartTime()
+    {
+        return $this->loadingStartTime;
+    }
+
+    /**
+     * @param float $loadingStartTime
+     */
+    public function setLoadingStartTime($loadingStartTime)
+    {
+        $this->loadingStartTime = $loadingStartTime;
+    }
+
+    /**
+     * @return float
+     */
+    public function getLoadingEndTime()
+    {
+        return $this->loadingEndTime;
+    }
+
+    /**
+     * @param float $loadingEndTime
+     */
+    public function setLoadingEndTime($loadingEndTime)
+    {
+        $this->loadingEndTime = $loadingEndTime;
     }
 }

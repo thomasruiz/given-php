@@ -5,7 +5,7 @@ use GivenPHP\Events\SuiteEvent;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DotFormatter
+class DotFormatter extends Formatter
 {
 
     /**
@@ -42,10 +42,14 @@ class DotFormatter
         }
     }
 
+    /**
+     * @param SuiteEvent $event
+     */
     public function afterSuite(SuiteEvent $event)
     {
+        $this->output->writeln("\n");
         $this->output->writeln("{$event->getTotalSpecifications()} specs");
         $this->output->writeln("{$event->getTotalExamples()} examples");
-        $this->output->writeln("{$event->getTime()} ms");
+        $this->output->writeln("{$event->getTime()} ms ({$event->getLoadingTime()} loading)");
     }
 }

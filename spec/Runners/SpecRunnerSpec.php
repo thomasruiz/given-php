@@ -5,8 +5,10 @@ use GivenPHP\Runners\SpecRunner;
 use GivenPHP\TestSuite\Context;
 use GivenPHP\TestSuite\Specification;
 use Prophecy\Argument;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
-return describe(SpecRunner::class, with('functionRunner'), function () {
+return describe(SpecRunner::class, with('functionRunner', 'events'), function () {
+    given('events', function (EventDispatcherInterface $dispatcherInterface) { return $dispatcherInterface->reveal(); });
     given('functionRunner', function (FunctionRunner $functionRunnerProphecy) { return $functionRunnerProphecy->reveal(); });
     given('callback', function () { return function () { }; });
 
@@ -24,6 +26,11 @@ return describe(SpecRunner::class, with('functionRunner'), function () {
     when('result', function (SpecRunner $that, Specification $spec) { return $that->run($spec->reveal()); });
 
     context('when running test', function () {
+        given(function (EventDispatcherInterface $dispatcherInterface) {
+            $dispatcherInterface->dispatch('beforeExample', Argument::type('\GivenPHP\Events\ExampleEvent'))->shouldBeCalled();
+            $dispatcherInterface->dispatch('afterExample', Argument::type('\GivenPHP\Events\ExampleEvent'))->shouldBeCalled();
+        });
+
         context('that passes', function () {
             given(function (FunctionRunner $functionRunnerProphecy, $callback) {
                 $functionRunnerProphecy->run($callback, Argument::type('\GivenPHP\TestSuite\Context'),

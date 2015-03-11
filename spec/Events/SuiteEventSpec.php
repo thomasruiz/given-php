@@ -12,6 +12,12 @@ return describe(SuiteEvent::class, with('suite'), function () {
         then(function (SuiteEvent $that) { return $that->getTime() === 3.; });
     });
 
+    context('.getLoadingTime', function () {
+        given(function (Suite $suiteProphecy) { $suiteProphecy->getLoadingStartTime()->willReturn(4.); });
+        given(function (Suite $suiteProphecy) { $suiteProphecy->getLoadingEndTime()->willReturn(9.); });
+        then(function (SuiteEvent $that) { return $that->getLoadingTime() === 5.; });
+    });
+
     context('.getTotalExamples', function () {
         given(function (Suite $suiteProphecy) { $suiteProphecy->count()->willReturn(10); });
         then(function (SuiteEvent $that) { return $that->getTotalExamples() === 10; });

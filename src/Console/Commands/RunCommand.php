@@ -1,11 +1,15 @@
 <?php namespace GivenPHP\Console\Commands;
 
 use GivenPHP\Container;
+use GivenPHP\Events\SuiteEvent;
+use GivenPHP\Runners\SpecRunner;
 use GivenPHP\TestSuite\Specification;
+use GivenPHP\TestSuite\Suite;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class RunCommand extends Command
 {
@@ -28,11 +32,9 @@ class RunCommand extends Command
 
     protected function configure()
     {
-        $this->setName('run')
-             ->setDefinition([
-                 new InputArgument('paths', InputArgument::IS_ARRAY, 'Specs to run', [ 'spec' ])
-             ])
-             ->setDescription('Run specs.');
+        $this->setName('run')->setDefinition([
+            new InputArgument('paths', InputArgument::IS_ARRAY, 'Specs to run', [ 'spec' ])
+        ])->setDescription('Run specs.');
     }
 
     /**
@@ -43,8 +45,14 @@ class RunCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $files  = $this->container->shared('fs');
-        $result = $this->runSpecs($this->findSpecs($files->listFiles('spec', true)));
+        $events = $this->container->shared('events');
+        $suite  = $this->container->shared('givenphp')->getSuite();
+
+        $this->prepare($suite, $events);
+        $files      = $this->container->shared('fs');
+        $specRunner = $this->container->shared('runners.spec');
+        $result     = $this->runSpecs($this->findSpecs($files->listFiles('spec', true)), $specRunner);
+        $events->dispatch('afterSuite', new SuiteEvent($suite));
 
         return $result ? 0 : -1;
     }
@@ -66,18 +74,20 @@ class RunCommand extends Command
             }
         }
 
+        $this->container->shared('givenphp')->getSuite()->setLoadingEndTime(microtime(true));
+
         return $specs;
     }
 
     /**
      * @param Specification[] $specs
+     * @param SpecRunner      $specRunner
      *
      * @return bool|null
      */
-    private function runSpecs(array $specs)
+    private function runSpecs(array $specs, SpecRunner $specRunner)
     {
-        $specRunner = $this->container->shared('runners.spec');
-        $result     = null;
+        $result = null;
 
         foreach ($specs as $spec) {
             $specResult = $specRunner->run($spec);
@@ -85,6 +95,25 @@ class RunCommand extends Command
             $result = $result === null ? $specResult : $result && $specResult;
         }
 
+        $this->container->shared('givenphp')->getSuite()->setEndTime(microtime(true));
+
         return $result;
+    }
+
+    /**
+     * @param Suite                    $suite
+     * @param EventDispatcherInterface $events
+     */
+    protected function prepare(Suite $suite, EventDispatcherInterface $events)
+    {
+        $formatter = $this->container->shared('formatter');
+        foreach ([ 'beforeSuite', 'afterSuite', 'beforeSpec', 'afterSpec', 'beforeExample', 'afterExample' ] as $event) {
+            $events->addListener($event, [ $formatter, $event ]);
+        }
+
+        $suite->setStartTime(microtime(true));
+        $suite->setLoadingStartTime(microtime(true));
+
+        $events->dispatch('beforeSuite', new SuiteEvent($suite));
     }
 }

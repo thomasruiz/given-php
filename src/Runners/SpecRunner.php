@@ -1,10 +1,12 @@
 <?php namespace GivenPHP\Runners;
 
 use Exception;
+use GivenPHP\Events\ExampleEvent;
 use GivenPHP\TestSuite\Context;
 use GivenPHP\TestSuite\Specification;
 use Prophecy\Prophet;
 use ReflectionClass;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class SpecRunner
 {
@@ -15,13 +17,20 @@ class SpecRunner
     private $functionRunner;
 
     /**
+     * @var EventDispatcherInterface
+     */
+    private $events;
+
+    /**
      * Construct a new SpecRunner object
      *
-     * @param FunctionRunner $exampleRunner
+     * @param FunctionRunner           $exampleRunner
+     * @param EventDispatcherInterface $events
      */
-    public function __construct(FunctionRunner $exampleRunner)
+    public function __construct(FunctionRunner $exampleRunner, EventDispatcherInterface $events)
     {
         $this->functionRunner = $exampleRunner;
+        $this->events         = $events;
     }
 
     /**
@@ -51,14 +60,15 @@ class SpecRunner
         $specResult = true;
 
         foreach ($context->getExamples() as $i => $example) {
+            $this->events->dispatch('beforeExample', new ExampleEvent(null));
+
             try {
                 $result = $this->runExample(clone $context, $example, $spec);
             } catch (Exception $e) {
-                echo '===Exception occured: ' . $e->getMessage() . "\n";
                 $result = false;
             }
 
-            echo ( $result ? '.' : 'X' ) . " " . $context->getContext() . ": $i\n";
+            $this->events->dispatch('afterExample', new ExampleEvent($result));
 
             if ($result === false) {
                 $specResult = false;

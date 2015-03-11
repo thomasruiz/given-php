@@ -30,6 +30,14 @@ class SuiteEvent extends Event
     }
 
     /**
+     * @return float
+     */
+    public function getLoadingTime()
+    {
+        return $this->suite->getLoadingEndTime() - $this->suite->getLoadingStartTime();
+    }
+
+    /**
      * @return int
      */
     public function getTotalSpecifications()
