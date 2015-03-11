@@ -26,7 +26,7 @@ class DotFormatter extends Formatter
      */
     public function __construct(InputInterface $input, OutputInterface $output)
     {
-        $this->input = $input;
+        $this->input  = $input;
         $this->output = $output;
     }
 
@@ -50,6 +50,8 @@ class DotFormatter extends Formatter
         $this->output->writeln("\n");
         $this->output->writeln("{$event->getTotalSpecifications()} specs");
         $this->output->writeln("{$event->getTotalExamples()} examples");
-        $this->output->writeln("{$event->getTime()} ms ({$event->getLoadingTime()} loading)");
+        $time        = number_format($event->getTime() * 1000, 2, '.', '');
+        $loadingTime = number_format($event->getLoadingTime() * 1000, 2, '.', '');
+        $this->output->writeln("{$time} ms ({$loadingTime} loading)");
     }
 }

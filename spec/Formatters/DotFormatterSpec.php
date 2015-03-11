@@ -40,6 +40,6 @@ return describe(DotFormatter::class, with('input', 'output'), function () {
         then(function (OutputInterface $outputInterface) {
             $outputInterface->writeln("4 examples")->shouldBeCalled();
         });
-        then(function (OutputInterface $outputInterface) { $outputInterface->writeln("1 ms (0.5 loading)")->shouldBeCalled(); });
+        then(function (OutputInterface $outputInterface) { $outputInterface->writeln("1000.00 ms (500.00 loading)")->shouldBeCalled(); });
     });
 });
