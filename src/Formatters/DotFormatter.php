@@ -26,22 +26,15 @@ class DotFormatter extends Formatter
     private $failedExamples = [ ];
 
     /**
-     * @var Container
-     */
-    private $container;
-
-    /**
      * Construct a new DotFormatter object
      *
      * @param InputInterface  $input
      * @param OutputInterface $output
-     * @param Container       $container
      */
-    public function __construct(InputInterface $input, OutputInterface $output, Container $container)
+    public function __construct(InputInterface $input, OutputInterface $output)
     {
-        $this->input  = $input;
-        $this->output = $output;
-        $this->container = $container;
+        $this->input     = $input;
+        $this->output    = $output;
     }
 
     /**

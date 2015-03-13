@@ -9,10 +9,9 @@ use GivenPHP\TestSuite\Context;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-return describe(DotFormatter::class, with('input', 'output', 'container'), function () {
+return describe(DotFormatter::class, with('input', 'output'), function () {
     given('input', function (InputInterface $inputInterface) { return $inputInterface->reveal(); });
     given('output', function (OutputInterface $outputInterface) { return $outputInterface->reveal(); });
-    given('container', function (Container $containerProphecy) { return $containerProphecy->reveal(); });
 
     then(function ($that) { return $that instanceof Formatter; });
 
