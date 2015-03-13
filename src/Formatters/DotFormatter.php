@@ -1,7 +1,9 @@
 <?php namespace GivenPHP\Formatters;
 
+use GivenPHP\Container;
 use GivenPHP\Events\ExampleEvent;
 use GivenPHP\Events\SuiteEvent;
+use GivenPHP\TestSuite\Context;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -19,15 +21,27 @@ class DotFormatter extends Formatter
     private $output;
 
     /**
+     * @var array
+     */
+    private $failedExamples = [ ];
+
+    /**
+     * @var Container
+     */
+    private $container;
+
+    /**
      * Construct a new DotFormatter object
      *
      * @param InputInterface  $input
      * @param OutputInterface $output
+     * @param Container       $container
      */
-    public function __construct(InputInterface $input, OutputInterface $output)
+    public function __construct(InputInterface $input, OutputInterface $output, Container $container)
     {
         $this->input  = $input;
         $this->output = $output;
+        $this->container = $container;
     }
 
     /**
@@ -39,6 +53,7 @@ class DotFormatter extends Formatter
             $this->output->write('.');
         } else {
             $this->output->write('F');
+            $this->failedExamples[] = [ $event->getExample(), $event->getContext(), $event->getResult() ];
         }
     }
 
@@ -47,11 +62,44 @@ class DotFormatter extends Formatter
      */
     public function afterSuite(SuiteEvent $event)
     {
+        $time        = number_format($event->getTime() * 1000, 2, '.', '');
+        $loadingTime = number_format($event->getLoadingTime() * 1000, 2, '.', '');
+
         $this->output->writeln("\n");
         $this->output->writeln("{$event->getTotalSpecifications()} specs");
         $this->output->writeln("{$event->getTotalExamples()} examples");
-        $time        = number_format($event->getTime() * 1000, 2, '.', '');
-        $loadingTime = number_format($event->getLoadingTime() * 1000, 2, '.', '');
         $this->output->writeln("{$time} ms ({$loadingTime} loading)");
+        $this->printFailedExamples();
+    }
+
+    private function printFailedExamples()
+    {
+        foreach ($this->failedExamples as $fail) {
+            $this->printFailedExample($fail[1]);
+        }
+    }
+
+    /**
+     * @param Context $context
+     */
+    private function printFailedExample(Context $context)
+    {
+        $this->output->writeln("\n{$context->getContext()}");
+    }
+
+    /**
+     * @return array
+     */
+    public function getFailedExamples()
+    {
+        return $this->failedExamples;
+    }
+
+    /**
+     * @param array $failedExamples
+     */
+    public function setFailedExamples($failedExamples)
+    {
+        $this->failedExamples = $failedExamples;
     }
 }

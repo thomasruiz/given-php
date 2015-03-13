@@ -5,6 +5,7 @@ use GivenPHP\TestSuite\Suite;
 
 return describe(SuiteEvent::class, with('suite'), function () {
     given('suite', function (Suite $suiteProphecy) { return $suiteProphecy->reveal(); });
+    then(function (SuiteEvent $that, $suite) { return $that->getSuite() === $suite; });
 
     context('.getTime', function () {
         given(function (Suite $suiteProphecy) { $suiteProphecy->getStartTime()->willReturn(5.); });

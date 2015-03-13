@@ -59,8 +59,8 @@ class SpecRunner
     {
         $specResult = true;
 
-        foreach ($context->getExamples() as $i => $example) {
-            $this->events->dispatch('beforeExample', new ExampleEvent(null));
+        foreach ($context->getExamples() as $example) {
+            $this->events->dispatch('beforeExample', new ExampleEvent($example, $context, null));
 
             try {
                 $result = $this->runExample(clone $context, $example, $spec);
@@ -68,7 +68,7 @@ class SpecRunner
                 $result = false;
             }
 
-            $this->events->dispatch('afterExample', new ExampleEvent($result));
+            $this->events->dispatch('afterExample', new ExampleEvent($example, $context, $result));
 
             if ($result === false) {
                 $specResult = false;

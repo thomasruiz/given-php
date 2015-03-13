@@ -52,4 +52,12 @@ class SuiteEvent extends Event
     {
         return count($this->suite);
     }
+
+    /**
+     * @return Suite
+     */
+    public function getSuite()
+    {
+        return $this->suite;
+    }
 }
