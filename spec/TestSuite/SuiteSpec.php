@@ -4,9 +4,8 @@ use GivenPHP\TestSuite\Specification;
 use GivenPHP\TestSuite\Suite;
 
 return describe(Suite::class, function () {
-    given(function (Specification $spec) { $spec->count()->willReturn(3); });
-
     context('adding specs', function () {
+        given(function (Specification $spec) { $spec->count()->willReturn(3); });
         given(function (Suite $that, Specification $spec) { $spec->setSuite($that)->shouldBeCalled(); });
 
         when(function (Suite $that, Specification $spec) { $that->addSpecification($spec->reveal()); });

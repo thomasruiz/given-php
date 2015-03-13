@@ -144,7 +144,7 @@ class Context implements Countable
      */
     public function count()
     {
-        return array_sum($this->examples);
+        return count($this->examples);
     }
 
     /**

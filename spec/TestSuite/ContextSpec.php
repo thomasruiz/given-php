@@ -50,6 +50,7 @@ return describe(Context::class, with('context', 'callback', 'parent'), function 
             when(function (Context $that, $data) { $that->addExample($data); });
             when(function (Context $that, $data) { $that->addExample($data); });
             then(function (Context $that, $data) { return $that->getExamples() === [ $data, $data ]; });
+            then(function (Context $that) { return count($that) === 2; });
         });
 
         context('actions', function () {
