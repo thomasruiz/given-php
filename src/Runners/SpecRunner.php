@@ -65,12 +65,12 @@ class SpecRunner
             try {
                 $result = $this->runExample(clone $context, $example, $spec);
             } catch (Exception $e) {
-                $result = false;
+                $result = $e;
             }
 
             $this->events->dispatch('afterExample', new ExampleEvent($example, $context, $result));
 
-            if ($result === false) {
+            if ($result === false || $result instanceof Exception) {
                 $specResult = false;
             }
         }

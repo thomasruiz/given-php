@@ -1,17 +1,18 @@
 <?php namespace spec\GivenPHP\Formatters;
 
-use GivenPHP\Container;
 use GivenPHP\Events\ExampleEvent;
 use GivenPHP\Events\SuiteEvent;
 use GivenPHP\Formatters\DotFormatter;
 use GivenPHP\Formatters\Formatter;
 use GivenPHP\TestSuite\Context;
+use League\Flysystem\Filesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-return describe(DotFormatter::class, with('input', 'output'), function () {
+return describe(DotFormatter::class, with('input', 'output', 'files'), function () {
     given('input', function (InputInterface $inputInterface) { return $inputInterface->reveal(); });
     given('output', function (OutputInterface $outputInterface) { return $outputInterface->reveal(); });
+    given('files', function (Filesystem $filesystemProphecy) { return $filesystemProphecy->reveal(); });
 
     then(function ($that) { return $that instanceof Formatter; });
 
@@ -41,6 +42,9 @@ return describe(DotFormatter::class, with('input', 'output'), function () {
         given(function (DotFormatter $that, $example, Context $context) {
             $that->setFailedExamples([ [ $example, $context->reveal(), false ], [ $example, $context->reveal(), false ] ]);
         });
+        given(function (Filesystem $filesystemProphecy) {
+            $filesystemProphecy->read(str_replace(getcwd(), '', __FILE__))->willReturn(file_get_contents(__FILE__));
+        });
 
         when(function (DotFormatter $that, $event) { $that->afterSuite($event->reveal()); });
 
@@ -50,6 +54,13 @@ return describe(DotFormatter::class, with('input', 'output'), function () {
         then(function (OutputInterface $outputInterface) {
             $outputInterface->writeln("1000.00 ms (500.00 loading)")->shouldBeCalled();
         });
-        then(function (OutputInterface $outputInterface) { $outputInterface->writeln("\nfoo")->shouldBeCalledTimes(2); });
+
+        $error = <<<ERROR
+\nfoo: function () { }
+ERROR;
+
+        then(function (OutputInterface $outputInterface) use ($error) {
+            $outputInterface->writeln($error)->shouldBeCalledTimes(2);
+        });
     });
 });

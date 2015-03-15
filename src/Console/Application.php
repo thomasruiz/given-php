@@ -76,7 +76,7 @@ class Application extends BaseApplication
         });
 
         $container->shared('formatter', function () use ($container) {
-            return new DotFormatter($container->shared('input'), $container->shared('output'));
+            return new DotFormatter($container->shared('input'), $container->shared('output'), $container->shared('fs'));
         });
     }
 }
